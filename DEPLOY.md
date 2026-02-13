@@ -14,19 +14,15 @@ Your game will be live at a URL like `https://sandaya.vercel.app`. Every push to
 
 ---
 
-## Optional: Deploy via GitHub Actions
+## Optional: Deploy via GitHub Actions (Deploy Hook)
 
-This repo includes a workflow (`.github/workflows/deploy-vercel.yml`) that deploys to Vercel on every push to `main`. To use it:
+This repo includes a workflow that triggers a Vercel deploy on every push to `main`. Uses **one secret** (a Deploy Hook URL):
 
-1. **Import the repo in Vercel once** (steps above) so the project exists.
-2. **Get Vercel IDs:** In the Vercel project, go to **Settings** → **General**. Copy **Project ID**. For **Team/Org ID**, go to your [Vercel account](https://vercel.com/account) and copy the **Team ID** (or use your personal **Org ID** from the URL when you open the project).
-3. **Create a token:** [vercel.com/account/tokens](https://vercel.com/account/tokens) → **Create** → copy the token.
-4. **Add GitHub secrets:** Repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**. Add:
-   - `VERCEL_TOKEN` = your token  
-   - `VERCEL_ORG_ID` = your team/org ID  
-   - `VERCEL_PROJECT_ID` = your project ID  
+1. **Import the repo in Vercel once** (steps in “Deploy from GitHub to Vercel” above) and deploy.
+2. **Create a Deploy Hook:** In the Vercel project go to **Settings** → **Git** → **Deploy Hooks**. Click **Create Hook**, name it e.g. “GitHub Actions”, copy the URL.
+3. **Add one GitHub secret:** Repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**. Name: `VERCEL_DEPLOY_HOOK_URL`, Value: the hook URL you copied.
 
-After that, every push to `main` will run the workflow and deploy to Vercel.
+After that, every push to `main` will trigger the workflow and Vercel will redeploy from GitHub. If the job fails with “Add secret VERCEL_DEPLOY_HOOK_URL”, add that secret as in step 3.
 
 ---
 

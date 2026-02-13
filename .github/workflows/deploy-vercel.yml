@@ -1,6 +1,10 @@
 # Deploy to Vercel on every push to main.
-# Requires GitHub repo secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
-# See DEPLOY.md for how to get these after importing the repo in Vercel once.
+# Uses a Vercel Deploy Hook (simplest for static sites).
+#
+# One-time setup:
+# 1. In Vercel: import this repo (Add New → Project → V4Vinnie/sandaya) and deploy.
+# 2. In Vercel: Project → Settings → Git → Deploy Hooks → Create Hook (e.g. "GitHub Actions") → copy the URL.
+# 3. In GitHub: Repo → Settings → Secrets and variables → Actions → New secret: name = VERCEL_DEPLOY_HOOK_URL, value = the hook URL.
 
 name: Deploy to Vercel
 
@@ -12,19 +16,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel env
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Trigger Vercel deploy
+        run: |
+          if [ -z "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" ]; then
+            echo "::error::Add secret VERCEL_DEPLOY_HOOK_URL (Vercel project → Settings → Git → Deploy Hooks)"
+            exit 1
+          fi
+          curl -f -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
-      - name: Deploy to Vercel
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
