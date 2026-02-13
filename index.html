@@ -265,34 +265,247 @@
     .leaderboard-entry.top {
       color: #ffd700;
     }
+
+    /* Storyboard: Welcome screen */
+    #welcome-screen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #7cb86a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 20;
+    }
+    #welcome-screen.hide { display: none; }
+    #welcome-screen .welcome-title {
+      font-size: 14px;
+      color: #1a3516;
+      margin-bottom: 12px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+    }
+    #welcome-screen .welcome-koala-wrap {
+      margin: 8px 0;
+      position: relative;
+    }
+    #welcome-screen .welcome-koala-wrap img { image-rendering: pixelated; width: 80px; height: 80px; }
+    #welcome-screen .welcome-deco {
+      position: absolute;
+      image-rendering: pixelated;
+    }
+    #welcome-screen .welcome-deco.house-l { left: -60px; top: 20px; width: 48px; height: 48px; }
+    #welcome-screen .welcome-deco.house-r { right: -60px; top: 20px; width: 48px; height: 48px; }
+    #welcome-screen .welcome-deco.bush { width: 32px; height: 32px; }
+    #welcome-screen .welcome-jouer {
+      margin-top: 16px;
+      font-size: 12px;
+      padding: 14px 32px;
+      background: #c4a574;
+      color: #1a3516;
+      border: 3px solid #1a3516;
+      box-shadow: 3px 3px 0 #1a3516;
+    }
+    #welcome-screen .welcome-footer {
+      position: absolute;
+      bottom: 12px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 8px;
+      color: #3d6b35;
+    }
+
+    /* Storyboard: How to Play */
+    #how-to-play-screen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #7cb86a;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      z-index: 19;
+      overflow-y: auto;
+    }
+    #how-to-play-screen.visible { display: flex; }
+    #how-to-play-screen .htp-title { font-size: 12px; color: #1a3516; margin-bottom: 12px; }
+    #how-to-play-screen .htp-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      max-width: 400px;
+      margin-bottom: 10px;
+    }
+    #how-to-play-screen .htp-panel {
+      background: #e8e0c8;
+      border: 3px solid #1a3516;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 8px;
+      color: #1a3516;
+    }
+    #how-to-play-screen .htp-panel.wide { grid-column: 1 / -1; }
+    #how-to-play-screen .htp-panel strong { display: block; margin-bottom: 4px; }
+    #how-to-play-screen .htp-panel img { display: block; margin-top: 4px; image-rendering: pixelated; }
+    #how-to-play-screen .htp-scoring {
+      background: #e8e0c8;
+      border: 3px solid #1a3516;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 8px;
+      color: #1a3516;
+      margin-bottom: 12px;
+      width: 100%; max-width: 400px;
+    }
+    #how-to-play-screen .htp-scoring .row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    #how-to-play-screen .htp-commencer { font-size: 10px; padding: 12px 28px; }
+    #how-to-play-screen .htp-footer { margin-top: auto; font-size: 8px; color: #3d6b35; }
+
+    /* Storyboard: Game Over */
+    #gameover-screen .go-title { color: #b91c1c; text-shadow: 2px 2px 0 #1a3516; font-size: 14px; }
+    #gameover-screen .go-koala-wrap { margin: 8px 0; }
+    #gameover-screen .go-koala-wrap img { width: 64px; height: 64px; image-rendering: pixelated; }
+    #gameover-screen .go-footer { margin-top: auto; font-size: 8px; color: #3d6b35; display: flex; justify-content: space-between; width: 100%; padding: 0 8px; }
+
+    /* Storyboard: Leaderboard */
+    #leaderboard-screen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #7cb86a;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      z-index: 18;
+      overflow-y: auto;
+    }
+    #leaderboard-screen.visible { display: flex; }
+    #leaderboard-screen .lb-koala-wrap { margin-bottom: 8px; }
+    #leaderboard-screen .lb-koala-wrap img { width: 64px; height: 64px; image-rendering: pixelated; }
+    #leaderboard-screen .lb-list { width: 100%; max-width: 320px; font-size: 8px; line-height: 2; color: #1a3516; }
+    #leaderboard-screen .lb-entry { display: flex; justify-content: space-between; padding: 4px 8px; border-radius: 4px; }
+    #leaderboard-screen .lb-entry.current { background: rgba(168, 224, 108, 0.6); }
+    #leaderboard-screen .lb-entry.top3 { color: #b45309; }
+    #leaderboard-screen .lb-buttons { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+    #leaderboard-screen .lb-link { font-size: 8px; color: #1a3516; cursor: pointer; text-decoration: underline; }
+
+    /* Gameplay: progress bar (storyboard) */
+    #game-progress-wrap {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      height: 16px;
+      background: #1a3516;
+      border-radius: 4px;
+      overflow: hidden;
+      z-index: 5;
+    }
+    #game-progress-fill {
+      height: 100%;
+      background: #fbbf24;
+      border-radius: 2px;
+      transition: width 0.2s linear;
+    }
+    #game-multiplier {
+      position: absolute;
+      bottom: 48px;
+      right: 12px;
+      font-size: 12px;
+      color: #f59e0b;
+      z-index: 5;
+      display: none;
+    }
+    #game-multiplier.show { display: block; }
   </style>
 </head>
 <body>
   <h1>KOALA FAMILY DELIVERY</h1>
   <div id="game-container">
     <canvas id="game-canvas" width="512" height="384"></canvas>
-    <div id="start-screen">
-      <h2>BUNGALOW BLISS</h2>
-      <p>
-        Assign the waiting family to a bungalow. Walk within 2 steps of a house, then ENTER or SPACE.<br>
-        Perfect match (beds = family size) = +10. Oversized house = fewer points. Too small = not allowed.<br>
-        Fill all bungalows before time runs out. Each day gets faster!
-      </p>
+
+    <!-- Storyboard: Welcome -->
+    <div id="welcome-screen">
+      <div class="welcome-title">BIENVENUE!</div>
+      <div class="welcome-koala-wrap">
+        <img id="welcome-koala-img" src="assets/koala_wave.png" alt="" />
+        <img class="welcome-deco house-l" src="assets/house_empty.png" alt="" />
+        <img class="welcome-deco house-r" src="assets/house_empty.png" alt="" />
+      </div>
+      <button class="pixel-btn welcome-jouer" id="welcome-play-btn">JOUER</button>
+      <span class="lb-link" id="welcome-scores-link" style="margin-top: 8px; font-size: 8px;">VOIR SCORES</span>
+      <div class="welcome-footer">
+        <span>SANDAYA</span>
+        <span>Maxxton</span>
+      </div>
+    </div>
+
+    <!-- Storyboard: How to Play -->
+    <div id="how-to-play-screen">
+      <div class="htp-title">COMMENT JOUER</div>
+      <div class="htp-panels">
+        <div class="htp-panel">
+          <strong>se d&eacute;placer</strong>
+          <span>WASD / Arrows to move</span>
+          <img src="assets/tap.png" alt="" width="32" height="32" />
+        </div>
+        <div class="htp-panel">
+          <strong>accueillir les invit&eacute;s</strong>
+          <span>Assign family to bungalow</span>
+          <img src="assets/people.png" alt="" width="32" height="32" />
+        </div>
+        <div class="htp-panel wide">
+          <strong>guide to their stay</strong>
+          <span>Walk to house, ENTER/SPACE to assign. Match family size to beds!</span>
+        </div>
+      </div>
+      <div class="htp-scoring">
+        <div class="row">correspondance parfaite <span>+10</span></div>
+        <div class="row">correspondance <span>+5</span></div>
+        <div class="row">bonus de rapidit&eacute; <span>+2</span></div>
+        <div class="row">combo <span>X2</span></div>
+        <div class="row">tout complet <span>+50</span></div>
+      </div>
+      <button class="pixel-btn htp-commencer" id="htp-start-btn">COMMENCER</button>
+      <div class="htp-footer">SANDAYA &bull; Maxxton</div>
+    </div>
+
+    <!-- Storyboard: Leaderboard (standalone) -->
+    <div id="leaderboard-screen">
+      <div class="lb-koala-wrap">
+        <img src="assets/koala_wave.png" alt="" width="64" height="64" />
+      </div>
+      <div class="lb-list" id="leaderboard-screen-entries"></div>
+      <div class="lb-buttons">
+        <button class="pixel-btn" id="lb-rejouer-btn">REJOUER</button>
+        <span class="lb-link" id="lb-comment-jouer">comment jouer</span>
+      </div>
+    </div>
+
+    <div id="start-screen" class="hide">
       <button class="pixel-btn" id="start-btn">START GAME</button>
-      <button class="pixel-btn" id="view-leaderboard-btn" style="margin-top: 12px;">VIEW LEADERBOARD</button>
     </div>
     <div id="gameover-screen">
-      <h2>GAME OVER</h2>
-      <p id="final-score">SCORE: 0</p>
-      <div id="name-input-wrap">
-        <input type="text" id="player-name" placeholder="YOUR NAME" maxlength="12" />
+      <h2 class="go-title">FIN DE PARTIE</h2>
+      <div class="go-koala-wrap">
+        <img id="gameover-koala-img" src="assets/koala_wave.png" alt="" />
       </div>
-      <button class="pixel-btn" id="submit-score-btn">SUBMIT &amp; SEE LEADERBOARD</button>
+      <p id="final-score">0</p>
+      <div id="name-input-wrap">
+        <input type="text" id="player-name" placeholder="nom" maxlength="12" />
+      </div>
+      <button class="pixel-btn" id="submit-score-btn">VALIDER</button>
       <div id="leaderboard">
-        <h3>LEADERBOARD</h3>
+        <h3>MEILLEURS SCORES</h3>
         <div id="leaderboard-entries"></div>
       </div>
-      <button class="pixel-btn" id="play-again-btn" style="margin-top: 16px;">PLAY AGAIN</button>
+      <button class="pixel-btn" id="play-again-btn" style="margin-top: 16px;">REJOUER</button>
+      <div class="go-footer">
+        <span>SANDAYA</span>
+        <span>Maxxton</span>
+      </div>
     </div>
     <div id="hud">
       <span id="day-display">DAY 1</span>
@@ -314,6 +527,10 @@
       <button class="pixel-btn" id="continue-day-btn">CONTINUE TO DAY <span id="tt-continue-day">2</span></button>
       <button class="pixel-btn" id="quit-save-btn" style="margin-top: 8px; font-size: 8px;">QUIT &amp; SAVE SCORE</button>
     </div>
+    <div id="game-progress-wrap" style="display: none;">
+      <div id="game-progress-fill" style="width: 100%;"></div>
+    </div>
+    <div id="game-multiplier">x2</div>
     <div id="win-lose-toast"></div>
   </div>
   <p id="instructions">
@@ -374,13 +591,16 @@
         score: 0,
         day: 1,
         timeRemaining: DAY_LENGTH_BASE,
+        currentDayLength: DAY_LENGTH_BASE,
         koala: { gx: 4, gy: 5, w: TILE, h: TILE, walkFrame: 0 },
         families: [],
         bungalows: [],
         showDayTransition: false,
         gameWon: false,
         gameLost: false,
-        toastUntil: 0
+        toastUntil: 0,
+        combo: 0,
+        multiplierUntil: 0
       };
 
       function makeFamily() {
@@ -428,7 +648,11 @@
           return;
         }
         const perfect = b.beds === fam.size;
-        const points = perfect ? 10 : Math.max(1, 10 - (b.beds - fam.size) * 3);
+        if (perfect) gameState.combo++; else gameState.combo = 0;
+        const mult = gameState.combo >= 2 ? 2 : 1;
+        gameState.multiplierUntil = performance.now() + 2000;
+        let points = perfect ? 10 : Math.max(1, 10 - (b.beds - fam.size) * 3);
+        points *= mult;
         gameState.score += points;
         b.occupied = true;
         b.family = fam;
@@ -440,7 +664,7 @@
           gameState.gameWon = true;
           showToast('All bungalows full!', 'good');
         } else {
-          showToast(perfect ? '+10 Perfect!' : '+' + points, 'good');
+          showToast((perfect ? '+10 Perfect!' : '+' + (points / mult)) + (mult > 1 ? ' x2!' : ''), 'good');
         }
       }
 
@@ -473,7 +697,8 @@
         gameState.bungalows.forEach(b => { b.occupied = false; b.family = null; });
         gameState.families = [];
         seedFamilies(6);
-        gameState.timeRemaining = Math.max(30, DAY_LENGTH_BASE - (gameState.day - 1) * 10);
+        gameState.currentDayLength = Math.max(30, DAY_LENGTH_BASE - (gameState.day - 1) * 10);
+        gameState.timeRemaining = gameState.currentDayLength;
         gameState.showDayTransition = false;
         gameState.gameWon = false;
         gameState.gameLost = false;
@@ -483,9 +708,10 @@
       function endGame() {
         gameState.running = false;
         restoreGameOverScreen();
-        document.getElementById('start-screen').style.display = 'none';
         document.getElementById('gameover-screen').classList.add('visible');
-        document.getElementById('final-score').textContent = 'SCORE: ' + gameState.score;
+        document.getElementById('final-score').textContent = gameState.score;
+        var prog = document.getElementById('game-progress-wrap');
+        if (prog) prog.style.display = 'none';
         renderLeaderboard();
       }
 
@@ -520,56 +746,83 @@
       }
 
       document.getElementById('submit-score-btn').addEventListener('click', () => {
-        const name = document.getElementById('player-name').value.trim();
+        var nameInput = document.getElementById('player-name');
+        var name = nameInput.value.trim();
         saveToLeaderboard(name, gameState.score);
         renderLeaderboard();
+        document.getElementById('gameover-screen').classList.remove('visible');
+        document.getElementById('leaderboard-screen').classList.add('visible');
+        renderLeaderboardScreen((name || 'ANON').slice(0, 12).toUpperCase());
       });
       document.getElementById('play-again-btn').addEventListener('click', () => {
         if (document.getElementById('play-again-btn').dataset.mode === 'back') {
           document.getElementById('gameover-screen').classList.remove('visible');
-          document.getElementById('start-screen').style.display = 'flex';
+          document.getElementById('leaderboard-screen').classList.remove('visible');
+          document.getElementById('welcome-screen').classList.remove('hide');
           restoreGameOverScreen();
           return;
         }
         document.getElementById('gameover-screen').classList.remove('visible');
-        document.getElementById('start-screen').style.display = 'flex';
         document.getElementById('player-name').value = '';
+        document.getElementById('welcome-screen').classList.remove('hide');
         restoreGameOverScreen();
-        startGame();
       });
 
       function showLeaderboardOnly() {
-        document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('gameover-screen').classList.add('visible');
-        document.getElementById('final-score').textContent = 'LEADERBOARD';
-        document.getElementById('name-input-wrap').style.display = 'none';
-        document.getElementById('submit-score-btn').style.display = 'none';
-        document.getElementById('play-again-btn').textContent = 'BACK';
-        document.getElementById('play-again-btn').dataset.mode = 'back';
-        renderLeaderboard();
+        document.getElementById('welcome-screen').classList.add('hide');
+        document.getElementById('leaderboard-screen').classList.add('visible');
+        renderLeaderboardScreen();
       }
       function restoreGameOverScreen() {
-        document.getElementById('final-score').textContent = 'SCORE: 0';
+        document.getElementById('final-score').textContent = '0';
         document.getElementById('name-input-wrap').style.display = 'block';
         document.getElementById('submit-score-btn').style.display = 'block';
-        document.getElementById('play-again-btn').textContent = 'PLAY AGAIN';
+        document.getElementById('play-again-btn').textContent = 'REJOUER';
         document.getElementById('play-again-btn').dataset.mode = '';
       }
-      document.getElementById('view-leaderboard-btn').addEventListener('click', showLeaderboardOnly);
+      function renderLeaderboardScreen(currentName) {
+        var entries = getLeaderboard();
+        var html = entries.map(function(e, i) {
+          var cls = 'lb-entry' + (i < 3 ? ' top3' : '') + (currentName && e.name === currentName ? ' current' : '');
+          return '<div class="' + cls + '">' + (i + 1) + '. ' + e.name + ' <span>' + e.score + '</span></div>';
+        }).join('') || '<div class="lb-entry">No scores yet!</div>';
+        document.getElementById('leaderboard-screen-entries').innerHTML = html;
+      }
+      document.getElementById('welcome-play-btn').addEventListener('click', function() {
+        document.getElementById('welcome-screen').classList.add('hide');
+        document.getElementById('how-to-play-screen').classList.add('visible');
+      });
+      document.getElementById('htp-start-btn').addEventListener('click', function() {
+        document.getElementById('how-to-play-screen').classList.remove('visible');
+        startGame();
+      });
+      document.getElementById('welcome-scores-link').addEventListener('click', showLeaderboardOnly);
+      document.getElementById('lb-rejouer-btn').addEventListener('click', function() {
+        document.getElementById('leaderboard-screen').classList.remove('visible');
+        document.getElementById('welcome-screen').classList.remove('hide');
+      });
+      document.getElementById('lb-comment-jouer').addEventListener('click', function() {
+        document.getElementById('leaderboard-screen').classList.remove('visible');
+        document.getElementById('how-to-play-screen').classList.add('visible');
+      });
 
       function startGame() {
+        var dayLen = DAY_LENGTH_BASE;
         gameState = {
           running: true,
           score: 0,
           day: 1,
-          timeRemaining: DAY_LENGTH_BASE,
+          timeRemaining: dayLen,
+          currentDayLength: dayLen,
           koala: { gx: 4, gy: 5, w: TILE, h: TILE, walkFrame: 0 },
           families: [],
           bungalows: [],
           showDayTransition: false,
           gameWon: false,
           gameLost: false,
-          toastUntil: 0
+          toastUntil: 0,
+          combo: 0,
+          multiplierUntil: 0
         };
         spawnBungalows();
         seedFamilies(6);
@@ -577,6 +830,9 @@
         document.getElementById('day-display').textContent = 'DAY 1';
         document.getElementById('time-display').textContent = '1:30';
         document.getElementById('occupied-display').textContent = '0/4';
+        document.getElementById('how-to-play-screen').classList.remove('visible');
+        var prog = document.getElementById('game-progress-wrap');
+        if (prog) prog.style.display = 'block';
       }
 
       document.getElementById('start-btn').addEventListener('click', () => {
@@ -624,6 +880,18 @@
 
         if (gameState.toastUntil > 0 && performance.now() > gameState.toastUntil) {
           document.getElementById('win-lose-toast').classList.remove('show');
+        }
+
+        var progWrap = document.getElementById('game-progress-wrap');
+        var progFill = document.getElementById('game-progress-fill');
+        if (progWrap && progFill && gameState.currentDayLength > 0) {
+          var pct = Math.max(0, Math.min(1, gameState.timeRemaining / gameState.currentDayLength));
+          progFill.style.width = (pct * 100) + '%';
+        }
+        var multEl = document.getElementById('game-multiplier');
+        if (multEl) {
+          if (gameState.combo >= 2 && performance.now() < gameState.multiplierUntil) multEl.classList.add('show');
+          else multEl.classList.remove('show');
         }
       }
 
