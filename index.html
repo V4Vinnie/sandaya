@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koala Family Delivery</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #2d5a27;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      color: #e8e0c8;
+      padding: 12px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    h1 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      text-align: center;
+      text-shadow: 2px 2px 0 #1a3516;
+      line-height: 1.6;
+    }
+
+    #game-container {
+      position: relative;
+      background: #4a7c42;
+      border: 4px solid #1a3516;
+      border-radius: 4px;
+      box-shadow: inset 0 0 0 2px #6b9e62, 4px 4px 0 #1a3516;
+      padding: 8px;
+    }
+
+    #game-canvas {
+      display: block;
+      background: #5a9c50;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    #hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      font-size: 10px;
+      gap: 16px;
+    }
+
+    #score-display, #lives-display {
+      color: #fff8dc;
+    }
+
+    #instructions {
+      margin-top: 12px;
+      font-size: 8px;
+      text-align: center;
+      line-height: 1.8;
+      color: #c4d4a8;
+      max-width: 480px;
+    }
+
+    /* Start screen */
+    #start-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(26, 53, 22, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 10;
+    }
+
+    #start-screen h2 {
+      font-size: 12px;
+      margin-bottom: 24px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    #start-screen p {
+      font-size: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      line-height: 2;
+      color: #c4d4a8;
+    }
+
+    .pixel-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      padding: 12px 24px;
+      background: #6b9e62;
+      color: #fff8dc;
+      border: 3px solid #1a3516;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 #1a3516;
+      image-rendering: pixelated;
+      transition: transform 0.08s, box-shadow 0.08s;
+    }
+
+    .pixel-btn:hover {
+      transform: translate(1px, 1px);
+      box-shadow: 2px 2px 0 #1a3516;
+    }
+
+    .pixel-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 #1a3516;
+    }
+
+    /* Game over / Leaderboard */
+    #gameover-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(26, 53, 22, 0.95);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 10;
+    }
+
+    #gameover-screen.visible {
+      display: flex;
+    }
+
+    #gameover-screen h2 {
+      font-size: 12px;
+      margin-bottom: 16px;
+      color: #fff8dc;
+    }
+
+    #final-score {
+      font-size: 14px;
+      margin-bottom: 20px;
+      color: #a8e06c;
+    }
+
+    #name-input-wrap {
+      margin-bottom: 16px;
+    }
+
+    #player-name {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      padding: 10px 16px;
+      width: 220px;
+      background: #e8e0c8;
+      color: #1a3516;
+      border: 3px solid #1a3516;
+    }
+
+    #leaderboard {
+      width: 100%;
+      max-width: 320px;
+      margin-top: 16px;
+      font-size: 8px;
+      line-height: 2.2;
+    }
+
+    #leaderboard h3 {
+      font-size: 10px;
+      margin-bottom: 12px;
+      color: #a8e06c;
+    }
+
+    .leaderboard-entry {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid #3d6b35;
+    }
+
+    .leaderboard-entry.top {
+      color: #ffd700;
+    }
+  </style>
+</head>
+<body>
+  <h1>KOALA FAMILY DELIVERY</h1>
+  <div id="game-container">
+    <canvas id="game-canvas" width="512" height="384"></canvas>
+    <div id="start-screen">
+      <h2>DELIVER FAMILIES TO THE RIGHT HOUSE!</h2>
+      <p>
+        Each house has a number of BEDS.<br>
+        Bring the family to the house with the SAME number of beds as family members.<br>
+        Use ARROWS or WASD to move. Pick up families by touching them, then deliver to a house.
+      </p>
+      <button class="pixel-btn" id="start-btn">START GAME</button>
+      <button class="pixel-btn" id="view-leaderboard-btn" style="margin-top: 12px;">VIEW LEADERBOARD</button>
+    </div>
+    <div id="gameover-screen">
+      <h2>GAME OVER</h2>
+      <p id="final-score">SCORE: 0</p>
+      <div id="name-input-wrap">
+        <input type="text" id="player-name" placeholder="YOUR NAME" maxlength="12" />
+      </div>
+      <button class="pixel-btn" id="submit-score-btn">SUBMIT &amp; SEE LEADERBOARD</button>
+      <div id="leaderboard">
+        <h3>LEADERBOARD</h3>
+        <div id="leaderboard-entries"></div>
+      </div>
+      <button class="pixel-btn" id="play-again-btn" style="margin-top: 16px;">PLAY AGAIN</button>
+    </div>
+    <div id="hud">
+      <span id="score-display">SCORE: 0</span>
+      <span id="lives-display">LIVES: 3</span>
+    </div>
+  </div>
+  <p id="instructions">
+    Match family size (people) to house beds. Wrong house = lose a life. Get 3 wrong and it's game over!
+  </p>
+
+  <script>
+    (function () {
+      const canvas = document.getElementById('game-canvas');
+      const ctx = canvas.getContext('2d');
+      const CW = 512;
+      const CH = 384;
+      const TILE = 32;
+
+      const ASSETS = {
+        koalaStill: 'assets/koala_still.png',
+        koalaWalk: 'assets/koala_walk.png',
+        houseEmpty: 'assets/house_empty.png',
+        houseFull: 'assets/house_full.png',
+        people: 'assets/people.png',
+        bush: 'assets/bush.png',
+        sun: 'assets/sun.png',
+        button: 'assets/button.png'
+      };
+
+      const images = {};
+      let loaded = 0;
+      const toLoad = Object.keys(ASSETS).length;
+      function loadImages(cb) {
+        Object.entries(ASSETS).forEach(([key, path]) => {
+          const img = new Image();
+          img.onload = () => { loaded++; if (loaded === toLoad) cb(); };
+          img.onerror = () => { loaded++; if (loaded === toLoad) cb(); };
+          img.src = path;
+          images[key] = img;
+        });
+      }
+
+      const keys = {};
+      let keyUsed = {};
+      document.addEventListener('keydown', e => {
+        keys[e.key] = true;
+        if (e.key === ' ') e.preventDefault();
+      });
+      document.addEventListener('keyup', e => {
+        keys[e.key] = false;
+        keyUsed[e.key] = false;
+      });
+
+      let gameState = {
+        running: false,
+        score: 0,
+        lives: 3,
+        koala: { x: 4 * TILE, y: 5 * TILE, w: TILE, h: TILE, carrying: null, walkFrame: 0 },
+        families: [],
+        houses: [],
+        spawnFamilyTimer: 0,
+        SPAWN_INTERVAL: 180
+      };
+
+      function spawnFamily() {
+        const size = 1 + Math.floor(Math.random() * 4);
+        let x, y;
+        do {
+          x = 1 + Math.floor(Math.random() * 12);
+          y = 1 + Math.floor(Math.random() * 8);
+        } while (occupied(x * TILE, y * TILE, null));
+        gameState.families.push({
+          x: x * TILE, y: y * TILE, w: TILE, h: TILE,
+          size, id: Date.now()
+        });
+      }
+
+      function spawnHouses() {
+        const positions = [
+          [2, 2], [10, 2], [2, 6], [10, 6]
+        ];
+        gameState.houses = positions.map(([gx, gy], i) => ({
+          x: gx * TILE, y: gy * TILE, w: TILE * 1.5, h: TILE * 1.5,
+          beds: 1 + (i % 4)
+        }));
+      }
+
+      function occupied(x, y, skipId) {
+        const k = gameState.koala;
+        if (!skipId && k.x < x + TILE && k.x + k.w > x && k.y < y + TILE && k.y + k.h > y) return true;
+        for (const f of gameState.families) {
+          if (f.id === skipId) continue;
+          if (f.x < x + TILE && f.x + TILE > x && f.y < y + TILE && f.y + TILE > y) return true;
+        }
+        for (const h of gameState.houses) {
+          if (h.x < x + TILE && h.x + h.w > x && h.y < y + TILE && h.y + h.h > y) return true;
+        }
+        return false;
+      }
+
+      function collides(a, b) {
+        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+      }
+
+      function pickUpFamily() {
+        if (gameState.koala.carrying) return;
+        for (let i = 0; i < gameState.families.length; i++) {
+          if (collides(gameState.koala, gameState.families[i])) {
+            gameState.koala.carrying = gameState.families.splice(i, 1)[0];
+            return;
+          }
+        }
+      }
+
+      function dropAtHouse() {
+        if (!gameState.koala.carrying) return;
+        const fam = gameState.koala.carrying;
+        for (const house of gameState.houses) {
+          if (collides(gameState.koala, house)) {
+            if (house.beds === fam.size) {
+              gameState.score += 100;
+            } else {
+              gameState.lives--;
+            }
+            gameState.koala.carrying = null;
+            if (gameState.lives <= 0) endGame();
+            return;
+          }
+        }
+      }
+
+      function endGame() {
+        gameState.running = false;
+        restoreGameOverScreen();
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('gameover-screen').classList.add('visible');
+        document.getElementById('final-score').textContent = 'SCORE: ' + gameState.score;
+        renderLeaderboard();
+      }
+
+      const LEADERBOARD_KEY = 'koalaFamilyLeaderboard';
+      function getLeaderboard() {
+        try {
+          const raw = localStorage.getItem(LEADERBOARD_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch (_) { return []; }
+      }
+      function saveToLeaderboard(name, score) {
+        const list = getLeaderboard();
+        list.push({ name: (name || 'ANON').slice(0, 12).toUpperCase(), score, date: Date.now() });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(list.slice(0, 10)));
+      }
+      function renderLeaderboard() {
+        const entries = getLeaderboard();
+        const html = entries.map((e, i) =>
+          `<div class="leaderboard-entry ${i < 3 ? 'top' : ''}">${i + 1}. ${e.name} - ${e.score}</div>`
+        ).join('') || '<div class="leaderboard-entry">No scores yet!</div>';
+        document.getElementById('leaderboard-entries').innerHTML = html;
+      }
+
+      document.getElementById('submit-score-btn').addEventListener('click', () => {
+        const name = document.getElementById('player-name').value.trim();
+        saveToLeaderboard(name, gameState.score);
+        renderLeaderboard();
+      });
+      document.getElementById('play-again-btn').addEventListener('click', () => {
+        if (document.getElementById('play-again-btn').dataset.mode === 'back') {
+          document.getElementById('gameover-screen').classList.remove('visible');
+          document.getElementById('start-screen').style.display = 'flex';
+          restoreGameOverScreen();
+          return;
+        }
+        document.getElementById('gameover-screen').classList.remove('visible');
+        document.getElementById('start-screen').style.display = 'flex';
+        document.getElementById('player-name').value = '';
+        restoreGameOverScreen();
+        startGame();
+      });
+
+      function showLeaderboardOnly() {
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('gameover-screen').classList.add('visible');
+        document.getElementById('final-score').textContent = 'LEADERBOARD';
+        document.getElementById('name-input-wrap').style.display = 'none';
+        document.getElementById('submit-score-btn').style.display = 'none';
+        document.getElementById('play-again-btn').textContent = 'BACK';
+        document.getElementById('play-again-btn').dataset.mode = 'back';
+        renderLeaderboard();
+      }
+      function restoreGameOverScreen() {
+        document.getElementById('final-score').textContent = 'SCORE: 0';
+        document.getElementById('name-input-wrap').style.display = 'block';
+        document.getElementById('submit-score-btn').style.display = 'block';
+        document.getElementById('play-again-btn').textContent = 'PLAY AGAIN';
+        document.getElementById('play-again-btn').dataset.mode = '';
+      }
+      document.getElementById('view-leaderboard-btn').addEventListener('click', showLeaderboardOnly);
+
+      function startGame() {
+        gameState = {
+          running: true,
+          score: 0,
+          lives: 3,
+          koala: { x: 4 * TILE, y: 5 * TILE, w: TILE, h: TILE, carrying: null, walkFrame: 0 },
+          families: [],
+          houses: [],
+          spawnFamilyTimer: 0,
+          SPAWN_INTERVAL: 180
+        };
+        spawnHouses();
+        spawnFamily();
+        spawnFamily();
+        document.getElementById('score-display').textContent = 'SCORE: 0';
+        document.getElementById('lives-display').textContent = 'LIVES: 3';
+      }
+
+      document.getElementById('start-btn').addEventListener('click', () => {
+        document.getElementById('start-screen').style.display = 'none';
+        startGame();
+      });
+
+      const SPEED = 3;
+      function update() {
+        if (!gameState.running) return;
+
+        if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+          gameState.koala.y = Math.max(0, gameState.koala.y - SPEED);
+          gameState.koala.walkFrame = (gameState.koala.walkFrame + 1) % 20;
+        }
+        if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+          gameState.koala.y = Math.min(CH - TILE, gameState.koala.y + SPEED);
+          gameState.koala.walkFrame = (gameState.koala.walkFrame + 1) % 20;
+        }
+        if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+          gameState.koala.x = Math.max(0, gameState.koala.x - SPEED);
+          gameState.koala.walkFrame = (gameState.koala.walkFrame + 1) % 20;
+        }
+        if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+          gameState.koala.x = Math.min(CW - TILE, gameState.koala.x + SPEED);
+          gameState.koala.walkFrame = (gameState.koala.walkFrame + 1) % 20;
+        }
+        if (keys[' '] && !keyUsed[' ']) {
+          keyUsed[' '] = true;
+          pickUpFamily();
+          dropAtHouse();
+        }
+
+        gameState.spawnFamilyTimer++;
+        if (gameState.spawnFamilyTimer >= gameState.SPAWN_INTERVAL) {
+          gameState.spawnFamilyTimer = 0;
+          if (gameState.families.length < 5) spawnFamily();
+        }
+
+        document.getElementById('score-display').textContent = 'SCORE: ' + gameState.score;
+        document.getElementById('lives-display').textContent = 'LIVES: ' + gameState.lives;
+      }
+
+      function draw() {
+        ctx.fillStyle = '#5a9c50';
+        ctx.fillRect(0, 0, CW, CH);
+
+        if (images.sun && images.sun.complete && images.sun.naturalWidth) {
+          ctx.drawImage(images.sun, CW - 80, 8, 64, 64);
+        }
+        if (images.bush && images.bush.complete) {
+          ctx.drawImage(images.bush, 8, CH - 48, 48, 48);
+          ctx.drawImage(images.bush, CW - 56, CH - 48, 48, 48);
+        }
+
+        gameState.houses.forEach(h => {
+          const img = images.houseEmpty;
+          if (img && img.complete && img.naturalWidth) {
+            ctx.drawImage(img, h.x, h.y, h.w, h.h);
+          } else {
+            ctx.fillStyle = '#7a9c8a';
+            ctx.fillRect(h.x, h.y, h.w, h.h);
+          }
+          ctx.fillStyle = '#1a3516';
+          ctx.font = '12px "Press Start 2P"';
+          ctx.fillText(String(h.beds), h.x + h.w / 2 - 6, h.y + h.h / 2 + 4);
+        });
+
+        gameState.families.forEach(f => {
+          if (images.people && images.people.complete) {
+            ctx.drawImage(images.people, f.x, f.y, TILE, TILE);
+          } else {
+            ctx.fillStyle = '#4a7c42';
+            ctx.fillRect(f.x, f.y, TILE, TILE);
+          }
+          ctx.fillStyle = '#fff8dc';
+          ctx.font = '10px \"Press Start 2P\"';
+          ctx.fillText(String(f.size), f.x + 10, f.y + 22);
+        });
+
+        const k = gameState.koala;
+        const koalaImg = (k.walkFrame < 10 && images.koalaWalk && images.koalaWalk.complete) ? images.koalaWalk : images.koalaStill;
+        if (koalaImg && koalaImg.complete && koalaImg.naturalWidth) {
+          ctx.drawImage(koalaImg, k.x, k.y, k.w, k.h);
+        } else {
+          ctx.fillStyle = '#8b9c7a';
+          ctx.fillRect(k.x, k.y, k.w, k.h);
+        }
+        if (k.carrying) {
+          ctx.fillStyle = '#fff8dc';
+          ctx.font = '8px \"Press Start 2P\"';
+          ctx.fillText(String(k.carrying.size), k.x + 8, k.y - 4);
+        }
+      }
+
+      function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+      }
+
+      loadImages(() => {
+        loop();
+      });
+    })();
+  </script>
+</body>
+</html>
