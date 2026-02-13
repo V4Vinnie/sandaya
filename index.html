@@ -592,7 +592,7 @@
         day: 1,
         timeRemaining: DAY_LENGTH_BASE,
         currentDayLength: DAY_LENGTH_BASE,
-        koala: { gx: 4, gy: 5, w: TILE, h: TILE, walkFrame: 0 },
+        koala: { x: 4 * TILE, y: 5 * TILE, gx: 4, gy: 5, w: TILE, h: TILE, walkFrame: 0 },
         families: [],
         bungalows: [],
         showDayTransition: false,
@@ -814,7 +814,7 @@
           day: 1,
           timeRemaining: dayLen,
           currentDayLength: dayLen,
-          koala: { gx: 4, gy: 5, w: TILE, h: TILE, walkFrame: 0 },
+          koala: { x: 4 * TILE, y: 5 * TILE, gx: 4, gy: 5, w: TILE, h: TILE, walkFrame: 0 },
           families: [],
           bungalows: [],
           showDayTransition: false,
@@ -840,21 +840,31 @@
         startGame();
       });
 
-      const MOVE_DELAY = 120;
-      let moveCooldown = 0;
+      const SPEED = 4;
       function update() {
         if (!gameState.running) return;
 
         if (gameState.showDayTransition) return;
 
         const k = gameState.koala;
-        moveCooldown--;
-        if (moveCooldown <= 0) {
-          if (keys['ArrowUp'] || keys['w'] || keys['W']) { k.gy = Math.max(0, k.gy - 1); moveCooldown = MOVE_DELAY; k.walkFrame = (k.walkFrame + 1) % 20; }
-          else if (keys['ArrowDown'] || keys['s'] || keys['S']) { k.gy = Math.min(GRID_H - 1, k.gy + 1); moveCooldown = MOVE_DELAY; k.walkFrame = (k.walkFrame + 1) % 20; }
-          else if (keys['ArrowLeft'] || keys['a'] || keys['A']) { k.gx = Math.max(0, k.gx - 1); moveCooldown = MOVE_DELAY; k.walkFrame = (k.walkFrame + 1) % 20; }
-          else if (keys['ArrowRight'] || keys['d'] || keys['D']) { k.gx = Math.min(GRID_W - 1, k.gx + 1); moveCooldown = MOVE_DELAY; k.walkFrame = (k.walkFrame + 1) % 20; }
+        if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+          k.y = Math.max(0, k.y - SPEED);
+          k.walkFrame = (k.walkFrame + 1) % 20;
         }
+        if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+          k.y = Math.min(CH - TILE, k.y + SPEED);
+          k.walkFrame = (k.walkFrame + 1) % 20;
+        }
+        if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+          k.x = Math.max(0, k.x - SPEED);
+          k.walkFrame = (k.walkFrame + 1) % 20;
+        }
+        if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+          k.x = Math.min(CW - TILE, k.x + SPEED);
+          k.walkFrame = (k.walkFrame + 1) % 20;
+        }
+        k.gx = Math.floor(k.x / TILE);
+        k.gy = Math.floor(k.y / TILE);
 
         if ((keys[' '] || keys['Enter']) && !keyUsed[' '] && !keyUsed['Enter']) {
           keyUsed[' '] = true;
@@ -895,9 +905,36 @@
         }
       }
 
+      function drawPaths() {
+        var PATH_W = 28;
+        var pad = 48;
+        var left = pad;
+        var right = CW - pad;
+        var top = pad;
+        var bottom = CH - pad;
+        var midX = (left + right) / 2;
+        var midY = (top + bottom) / 2;
+        ctx.strokeStyle = '#f5f0e6';
+        ctx.lineWidth = PATH_W;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(left, midY);
+        ctx.lineTo(right, midY);
+        ctx.moveTo(midX, top);
+        ctx.lineTo(midX, bottom);
+        ctx.moveTo(left, top);
+        ctx.lineTo(right, top);
+        ctx.lineTo(right, bottom);
+        ctx.lineTo(left, bottom);
+        ctx.closePath();
+        ctx.stroke();
+      }
+
       function draw() {
-        ctx.fillStyle = '#5a9c50';
+        ctx.fillStyle = '#e8dcc8';
         ctx.fillRect(0, 0, CW, CH);
+        drawPaths();
 
         if (images.sun && images.sun.complete && images.sun.naturalWidth) {
           ctx.drawImage(images.sun, CW - 80, 8, 64, 64);
@@ -921,13 +958,12 @@
         });
 
         const k = gameState.koala;
-        const kx = k.gx * TILE, ky = k.gy * TILE;
         const koalaImg = (k.walkFrame < 10 && images.koalaWalk && images.koalaWalk.complete) ? images.koalaWalk : images.koalaStill;
         if (koalaImg && koalaImg.complete && koalaImg.naturalWidth) {
-          ctx.drawImage(koalaImg, kx, ky, k.w, k.h);
+          ctx.drawImage(koalaImg, k.x, k.y, k.w, k.h);
         } else {
           ctx.fillStyle = '#8b9c7a';
-          ctx.fillRect(kx, ky, k.w, k.h);
+          ctx.fillRect(k.x, k.y, k.w, k.h);
         }
       }
 
