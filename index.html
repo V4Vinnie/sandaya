@@ -53,16 +53,84 @@
 
     #hud {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       margin-top: 8px;
       font-size: 10px;
-      gap: 16px;
+      gap: 8px;
     }
 
-    #score-display, #lives-display {
+    #score-display, #day-display, #time-display, #occupied-display {
       color: #fff8dc;
     }
+
+    #family-queue {
+      margin-top: 6px;
+      padding: 6px 10px;
+      background: rgba(26, 53, 22, 0.9);
+      border: 2px solid #1a3516;
+      border-radius: 4px;
+      font-size: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #family-queue .queue-label { color: #c4d4a8; }
+    #current-family { color: #a8e06c; font-weight: bold; }
+
+    #day-transition-screen {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 53, 22, 0.95);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 15;
+    }
+
+    #day-transition-screen.visible {
+      display: flex;
+    }
+
+    #day-transition-screen h2 { font-size: 12px; margin-bottom: 8px; color: #fff8dc; }
+    #day-transition-screen .tt-summary { font-size: 8px; color: #c4d4a8; margin-bottom: 16px; }
+    #day-transition-screen .tt-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 280px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      font-size: 8px;
+    }
+    #day-transition-screen .tt-occupied { background: rgba(168, 224, 108, 0.2); color: #a8e06c; }
+    #day-transition-screen .tt-empty { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+    #day-transition-screen .tt-penalty { background: rgba(248, 113, 113, 0.3); color: #fca5a5; }
+    #day-transition-screen .tt-next { font-size: 8px; margin: 12px 0; color: #c4d4a8; }
+    #day-transition-screen .pixel-btn { margin-top: 8px; }
+
+    #win-lose-toast {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 10px;
+      z-index: 12;
+      display: none;
+      pointer-events: none;
+    }
+    #win-lose-toast.show { display: block; animation: toast 2s ease; }
+    #win-lose-toast.bg-green-700 { background: #15803d; color: #fff; }
+    #win-lose-toast.bg-red-700 { background: #b91c1c; color: #fff; }
+    #win-lose-toast.bg-gray-700 { background: #374151; color: #fff; }
+    @keyframes toast { 0%, 30% { opacity: 1; } 100% { opacity: 0; } }
 
     #instructions {
       margin-top: 12px;
@@ -204,11 +272,11 @@
   <div id="game-container">
     <canvas id="game-canvas" width="512" height="384"></canvas>
     <div id="start-screen">
-      <h2>DELIVER FAMILIES TO THE RIGHT HOUSE!</h2>
+      <h2>BUNGALOW BLISS</h2>
       <p>
-        Each house has a number of BEDS.<br>
-        Bring the family to the house with the SAME number of beds as family members.<br>
-        Use ARROWS or WASD to move. Pick up families by touching them, then deliver to a house.
+        Assign the waiting family to a bungalow. Walk within 2 steps of a house, then ENTER or SPACE.<br>
+        Perfect match (beds = family size) = +10. Oversized house = fewer points. Too small = not allowed.<br>
+        Fill all bungalows before time runs out. Each day gets faster!
       </p>
       <button class="pixel-btn" id="start-btn">START GAME</button>
       <button class="pixel-btn" id="view-leaderboard-btn" style="margin-top: 12px;">VIEW LEADERBOARD</button>
@@ -227,12 +295,29 @@
       <button class="pixel-btn" id="play-again-btn" style="margin-top: 16px;">PLAY AGAIN</button>
     </div>
     <div id="hud">
+      <span id="day-display">DAY 1</span>
+      <span id="time-display">1:30</span>
       <span id="score-display">SCORE: 0</span>
-      <span id="lives-display">LIVES: 3</span>
+      <span id="occupied-display">0/4</span>
     </div>
+    <div id="family-queue">
+      <span class="queue-label">NEXT FAMILY:</span>
+      <div id="current-family"><span id="current-family-size">-</span> people</div>
+    </div>
+    <div id="day-transition-screen">
+      <h2>DAY <span id="tt-day">1</span> ENDED</h2>
+      <p class="tt-summary">Time's up! Here's your summary:</p>
+      <div class="tt-row tt-occupied"><span>Occupied Bungalows</span><span id="tt-occupied">0</span></div>
+      <div class="tt-row tt-empty"><span>Empty Bungalows</span><span id="tt-empty">4</span></div>
+      <div class="tt-row tt-penalty" id="tt-penalty-wrap"><span>Penalty</span><span id="tt-penalty">-0</span></div>
+      <p class="tt-next">Day <span id="tt-next-day">2</span> will be faster!</p>
+      <button class="pixel-btn" id="continue-day-btn">CONTINUE TO DAY <span id="tt-continue-day">2</span></button>
+      <button class="pixel-btn" id="quit-save-btn" style="margin-top: 8px; font-size: 8px;">QUIT &amp; SAVE SCORE</button>
+    </div>
+    <div id="win-lose-toast"></div>
   </div>
   <p id="instructions">
-    Match family size (people) to house beds. Wrong house = lose a life. Get 3 wrong and it's game over!
+    Walk to a bungalow (within 2 steps). ENTER or SPACE to assign. Perfect match = +10. Oversized house = fewer points. Too small = not allowed!
   </p>
 
   <script>
@@ -278,82 +363,121 @@
         keyUsed[e.key] = false;
       });
 
+      const GRID_W = Math.floor(CW / TILE);
+      const GRID_H = Math.floor(CH / TILE);
+      const DAY_LENGTH_BASE = 90;
+      const PENALTY_PER_EMPTY = 5;
+      const FAMILY_COLORS = ['#4ade80', '#60a5fa', '#f472b6', '#fbbf24'];
+
       let gameState = {
         running: false,
         score: 0,
-        lives: 3,
-        koala: { x: 4 * TILE, y: 5 * TILE, w: TILE, h: TILE, carrying: null, walkFrame: 0 },
+        day: 1,
+        timeRemaining: DAY_LENGTH_BASE,
+        koala: { gx: 4, gy: 5, w: TILE, h: TILE, walkFrame: 0 },
         families: [],
-        houses: [],
-        spawnFamilyTimer: 0,
-        SPAWN_INTERVAL: 180
+        bungalows: [],
+        showDayTransition: false,
+        gameWon: false,
+        gameLost: false,
+        toastUntil: 0
       };
 
-      function spawnFamily() {
-        const size = 1 + Math.floor(Math.random() * 4);
-        let x, y;
-        do {
-          x = 1 + Math.floor(Math.random() * 12);
-          y = 1 + Math.floor(Math.random() * 8);
-        } while (occupied(x * TILE, y * TILE, null));
-        gameState.families.push({
-          x: x * TILE, y: y * TILE, w: TILE, h: TILE,
-          size, id: Date.now()
-        });
+      function makeFamily() {
+        return { id: Date.now() + Math.random(), size: 1 + Math.floor(Math.random() * 4), color: FAMILY_COLORS[Math.floor(Math.random() * FAMILY_COLORS.length)] };
       }
 
-      function spawnHouses() {
-        const positions = [
-          [2, 2], [10, 2], [2, 6], [10, 6]
-        ];
-        gameState.houses = positions.map(([gx, gy], i) => ({
+      function seedFamilies(count) {
+        for (let i = 0; i < count; i++) gameState.families.push(makeFamily());
+      }
+
+      function spawnBungalows() {
+        const positions = [[2, 2], [10, 2], [2, 8], [10, 8]];
+        gameState.bungalows = positions.map(([gx, gy], i) => ({
+          id: 'b' + i,
+          gx, gy,
           x: gx * TILE, y: gy * TILE, w: TILE * 1.5, h: TILE * 1.5,
-          beds: 1 + (i % 4)
+          beds: 1 + (i % 4),
+          occupied: false,
+          family: null
         }));
       }
 
-      function occupied(x, y, skipId) {
-        const k = gameState.koala;
-        if (!skipId && k.x < x + TILE && k.x + k.w > x && k.y < y + TILE && k.y + k.h > y) return true;
-        for (const f of gameState.families) {
-          if (f.id === skipId) continue;
-          if (f.x < x + TILE && f.x + TILE > x && f.y < y + TILE && f.y + TILE > y) return true;
-        }
-        for (const h of gameState.houses) {
-          if (h.x < x + TILE && h.x + h.w > x && h.y < y + TILE && h.y + h.h > y) return true;
-        }
-        return false;
+      function getCurrentFamily() {
+        return gameState.families.length > 0 ? gameState.families[0] : null;
       }
 
-      function collides(a, b) {
-        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+      function manhattan(b, p) {
+        return Math.abs(b.gx - p.gx) + Math.abs(b.gy - p.gy);
       }
 
-      function pickUpFamily() {
-        if (gameState.koala.carrying) return;
-        for (let i = 0; i < gameState.families.length; i++) {
-          if (collides(gameState.koala, gameState.families[i])) {
-            gameState.koala.carrying = gameState.families.splice(i, 1)[0];
-            return;
-          }
+      function nearbyBungalow() {
+        const p = gameState.koala;
+        return gameState.bungalows.find(b => !b.occupied && manhattan(b, p) <= 2);
+      }
+
+      function assignFamily() {
+        const fam = getCurrentFamily();
+        const b = nearbyBungalow();
+        if (!fam || !b) {
+          if (!b && fam) showToast('Walk closer to a bungalow!', 'info');
+          return;
+        }
+        if (b.beds < fam.size) {
+          showToast('TOO SMALL!', 'bad');
+          return;
+        }
+        const perfect = b.beds === fam.size;
+        const points = perfect ? 10 : Math.max(1, 10 - (b.beds - fam.size) * 3);
+        gameState.score += points;
+        b.occupied = true;
+        b.family = fam;
+        gameState.families.shift();
+        gameState.families.push(makeFamily());
+
+        const occupied = gameState.bungalows.filter(x => x.occupied).length;
+        if (occupied === gameState.bungalows.length) {
+          gameState.gameWon = true;
+          showToast('All bungalows full!', 'good');
+        } else {
+          showToast(perfect ? '+10 Perfect!' : '+' + points, 'good');
         }
       }
 
-      function dropAtHouse() {
-        if (!gameState.koala.carrying) return;
-        const fam = gameState.koala.carrying;
-        for (const house of gameState.houses) {
-          if (collides(gameState.koala, house)) {
-            if (house.beds === fam.size) {
-              gameState.score += 100;
-            } else {
-              gameState.lives--;
-            }
-            gameState.koala.carrying = null;
-            if (gameState.lives <= 0) endGame();
-            return;
-          }
-        }
+      function showToast(msg, type) {
+        const el = document.getElementById('win-lose-toast');
+        el.textContent = msg;
+        el.className = 'show ' + (type === 'good' ? 'bg-green-700' : type === 'bad' ? 'bg-red-700' : 'bg-gray-700');
+        gameState.toastUntil = performance.now() + 1500;
+      }
+
+      function endDay() {
+        gameState.gameLost = true;
+        const occupied = gameState.bungalows.filter(b => b.occupied).length;
+        const empty = gameState.bungalows.length - occupied;
+        const penalty = empty * PENALTY_PER_EMPTY;
+        gameState.score = Math.max(0, gameState.score - penalty);
+        gameState.showDayTransition = true;
+        document.getElementById('tt-day').textContent = gameState.day;
+        document.getElementById('tt-occupied').textContent = occupied;
+        document.getElementById('tt-empty').textContent = empty;
+        document.getElementById('tt-penalty').textContent = '-' + penalty;
+        document.getElementById('tt-penalty-wrap').style.display = penalty > 0 ? 'flex' : 'none';
+        document.getElementById('tt-next-day').textContent = gameState.day + 1;
+        document.getElementById('tt-continue-day').textContent = gameState.day + 1;
+        document.getElementById('day-transition-screen').classList.add('visible');
+      }
+
+      function continueToNextDay() {
+        gameState.day++;
+        gameState.bungalows.forEach(b => { b.occupied = false; b.family = null; });
+        gameState.families = [];
+        seedFamilies(6);
+        gameState.timeRemaining = Math.max(30, DAY_LENGTH_BASE - (gameState.day - 1) * 10);
+        gameState.showDayTransition = false;
+        gameState.gameWon = false;
+        gameState.gameLost = false;
+        document.getElementById('day-transition-screen').classList.remove('visible');
       }
 
       function endGame() {
@@ -364,6 +488,15 @@
         document.getElementById('final-score').textContent = 'SCORE: ' + gameState.score;
         renderLeaderboard();
       }
+
+      document.getElementById('continue-day-btn').addEventListener('click', () => {
+        continueToNextDay();
+      });
+      document.getElementById('quit-save-btn').addEventListener('click', () => {
+        document.getElementById('day-transition-screen').classList.remove('visible');
+        gameState.showDayTransition = false;
+        endGame();
+      });
 
       const LEADERBOARD_KEY = 'koalaFamilyLeaderboard';
       function getLeaderboard() {
@@ -428,18 +561,22 @@
         gameState = {
           running: true,
           score: 0,
-          lives: 3,
-          koala: { x: 4 * TILE, y: 5 * TILE, w: TILE, h: TILE, carrying: null, walkFrame: 0 },
+          day: 1,
+          timeRemaining: DAY_LENGTH_BASE,
+          koala: { gx: 4, gy: 5, w: TILE, h: TILE, walkFrame: 0 },
           families: [],
-          houses: [],
-          spawnFamilyTimer: 0,
-          SPAWN_INTERVAL: 180
+          bungalows: [],
+          showDayTransition: false,
+          gameWon: false,
+          gameLost: false,
+          toastUntil: 0
         };
-        spawnHouses();
-        spawnFamily();
-        spawnFamily();
+        spawnBungalows();
+        seedFamilies(6);
         document.getElementById('score-display').textContent = 'SCORE: 0';
-        document.getElementById('lives-display').textContent = 'LIVES: 3';
+        document.getElementById('day-display').textContent = 'DAY 1';
+        document.getElementById('time-display').textContent = '1:30';
+        document.getElementById('occupied-display').textContent = '0/4';
       }
 
       document.getElementById('start-btn').addEventListener('click', () => {
@@ -447,40 +584,47 @@
         startGame();
       });
 
-      const SPEED = 3;
+      const MOVE_DELAY = 120;
+      let moveCooldown = 0;
       function update() {
         if (!gameState.running) return;
 
-        if (keys['ArrowUp'] || keys['w'] || keys['W']) {
-          gameState.koala.y = Math.max(0, gameState.koala.y - SPEED);
-          gameState.koala.walkFrame = (gameState.koala.walkFrame + 1) % 20;
-        }
-        if (keys['ArrowDown'] || keys['s'] || keys['S']) {
-          gameState.koala.y = Math.min(CH - TILE, gameState.koala.y + SPEED);
-          gameState.koala.walkFrame = (gameState.koala.walkFrame + 1) % 20;
-        }
-        if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
-          gameState.koala.x = Math.max(0, gameState.koala.x - SPEED);
-          gameState.koala.walkFrame = (gameState.koala.walkFrame + 1) % 20;
-        }
-        if (keys['ArrowRight'] || keys['d'] || keys['D']) {
-          gameState.koala.x = Math.min(CW - TILE, gameState.koala.x + SPEED);
-          gameState.koala.walkFrame = (gameState.koala.walkFrame + 1) % 20;
-        }
-        if (keys[' '] && !keyUsed[' ']) {
-          keyUsed[' '] = true;
-          pickUpFamily();
-          dropAtHouse();
+        if (gameState.showDayTransition) return;
+
+        const k = gameState.koala;
+        moveCooldown--;
+        if (moveCooldown <= 0) {
+          if (keys['ArrowUp'] || keys['w'] || keys['W']) { k.gy = Math.max(0, k.gy - 1); moveCooldown = MOVE_DELAY; k.walkFrame = (k.walkFrame + 1) % 20; }
+          else if (keys['ArrowDown'] || keys['s'] || keys['S']) { k.gy = Math.min(GRID_H - 1, k.gy + 1); moveCooldown = MOVE_DELAY; k.walkFrame = (k.walkFrame + 1) % 20; }
+          else if (keys['ArrowLeft'] || keys['a'] || keys['A']) { k.gx = Math.max(0, k.gx - 1); moveCooldown = MOVE_DELAY; k.walkFrame = (k.walkFrame + 1) % 20; }
+          else if (keys['ArrowRight'] || keys['d'] || keys['D']) { k.gx = Math.min(GRID_W - 1, k.gx + 1); moveCooldown = MOVE_DELAY; k.walkFrame = (k.walkFrame + 1) % 20; }
         }
 
-        gameState.spawnFamilyTimer++;
-        if (gameState.spawnFamilyTimer >= gameState.SPAWN_INTERVAL) {
-          gameState.spawnFamilyTimer = 0;
-          if (gameState.families.length < 5) spawnFamily();
+        if ((keys[' '] || keys['Enter']) && !keyUsed[' '] && !keyUsed['Enter']) {
+          keyUsed[' '] = true;
+          keyUsed['Enter'] = true;
+          assignFamily();
         }
+
+        gameState.timeRemaining -= 1 / 60;
+        if (gameState.timeRemaining <= 0 && !gameState.showDayTransition) endDay();
+
+        const occupied = gameState.bungalows.filter(b => b.occupied).length;
+        const total = gameState.bungalows.length;
+        const t = Math.max(0, gameState.timeRemaining);
+        const mins = Math.floor(t / 60);
+        const secs = Math.floor(t % 60);
 
         document.getElementById('score-display').textContent = 'SCORE: ' + gameState.score;
-        document.getElementById('lives-display').textContent = 'LIVES: ' + gameState.lives;
+        document.getElementById('day-display').textContent = 'DAY ' + gameState.day;
+        document.getElementById('time-display').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+        document.getElementById('occupied-display').textContent = occupied + '/' + total;
+        const cf = getCurrentFamily();
+        document.getElementById('current-family-size').textContent = cf ? cf.size : '-';
+
+        if (gameState.toastUntil > 0 && performance.now() > gameState.toastUntil) {
+          document.getElementById('win-lose-toast').classList.remove('show');
+        }
       }
 
       function draw() {
@@ -495,43 +639,27 @@
           ctx.drawImage(images.bush, CW - 56, CH - 48, 48, 48);
         }
 
-        gameState.houses.forEach(h => {
-          const img = images.houseEmpty;
+        gameState.bungalows.forEach(b => {
+          const img = b.occupied && images.houseFull && images.houseFull.complete ? images.houseFull : images.houseEmpty;
           if (img && img.complete && img.naturalWidth) {
-            ctx.drawImage(img, h.x, h.y, h.w, h.h);
+            ctx.drawImage(img, b.x, b.y, b.w, b.h);
           } else {
-            ctx.fillStyle = '#7a9c8a';
-            ctx.fillRect(h.x, h.y, h.w, h.h);
+            ctx.fillStyle = b.occupied ? '#6b8e6a' : '#7a9c8a';
+            ctx.fillRect(b.x, b.y, b.w, b.h);
           }
           ctx.fillStyle = '#1a3516';
           ctx.font = '12px "Press Start 2P"';
-          ctx.fillText(String(h.beds), h.x + h.w / 2 - 6, h.y + h.h / 2 + 4);
-        });
-
-        gameState.families.forEach(f => {
-          if (images.people && images.people.complete) {
-            ctx.drawImage(images.people, f.x, f.y, TILE, TILE);
-          } else {
-            ctx.fillStyle = '#4a7c42';
-            ctx.fillRect(f.x, f.y, TILE, TILE);
-          }
-          ctx.fillStyle = '#fff8dc';
-          ctx.font = '10px \"Press Start 2P\"';
-          ctx.fillText(String(f.size), f.x + 10, f.y + 22);
+          ctx.fillText(String(b.beds), b.x + b.w / 2 - 6, b.y + b.h / 2 + 4);
         });
 
         const k = gameState.koala;
+        const kx = k.gx * TILE, ky = k.gy * TILE;
         const koalaImg = (k.walkFrame < 10 && images.koalaWalk && images.koalaWalk.complete) ? images.koalaWalk : images.koalaStill;
         if (koalaImg && koalaImg.complete && koalaImg.naturalWidth) {
-          ctx.drawImage(koalaImg, k.x, k.y, k.w, k.h);
+          ctx.drawImage(koalaImg, kx, ky, k.w, k.h);
         } else {
           ctx.fillStyle = '#8b9c7a';
-          ctx.fillRect(k.x, k.y, k.w, k.h);
-        }
-        if (k.carrying) {
-          ctx.fillStyle = '#fff8dc';
-          ctx.font = '8px \"Press Start 2P\"';
-          ctx.fillText(String(k.carrying.size), k.x + 8, k.y - 4);
+          ctx.fillRect(kx, ky, k.w, k.h);
         }
       }
 

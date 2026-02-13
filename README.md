@@ -24,6 +24,10 @@ npx serve .
 
 Then go to `http://localhost:8000` (or the port shown).
 
+## Deploy to Vercel
+
+The project is set up for static hosting. See **[DEPLOY.md](DEPLOY.md)** for steps to create a GitHub repo and deploy to Vercel.
+
 ## Assets
 
 Uses pixel art from the `assets/` folder: koala (still/walk), houses (empty/full), people, bush, sun.
