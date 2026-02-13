@@ -78,7 +78,9 @@
     }
 
     #family-queue .queue-label { color: #c4d4a8; }
-    #current-family { color: #a8e06c; font-weight: bold; }
+    #current-family { color: #a8e06c; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+    #current-family-people { display: flex; align-items: center; gap: 2px; }
+    #current-family-people img { width: 20px; height: 20px; image-rendering: pixelated; image-rendering: crisp-edges; }
 
     #day-transition-screen {
       display: none;
@@ -515,7 +517,10 @@
     </div>
     <div id="family-queue">
       <span class="queue-label">NEXT FAMILY:</span>
-      <div id="current-family"><span id="current-family-size">-</span> people</div>
+      <div id="current-family">
+        <div id="current-family-people"></div>
+        <span id="current-family-size">-</span>
+      </div>
     </div>
     <div id="day-transition-screen">
       <h2>DAY <span id="tt-day">1</span> ENDED</h2>
@@ -886,7 +891,22 @@
         document.getElementById('time-display').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
         document.getElementById('occupied-display').textContent = occupied + '/' + total;
         const cf = getCurrentFamily();
-        document.getElementById('current-family-size').textContent = cf ? cf.size : '-';
+        var sizeEl = document.getElementById('current-family-size');
+        var peopleEl = document.getElementById('current-family-people');
+        var n = cf ? cf.size : 0;
+        if (peopleEl.dataset.count !== String(n)) {
+          peopleEl.dataset.count = n;
+          peopleEl.innerHTML = '';
+          if (n > 0) {
+            for (var i = 0; i < n; i++) {
+              var im = document.createElement('img');
+              im.src = 'assets/people.png';
+              im.alt = '';
+              peopleEl.appendChild(im);
+            }
+          }
+        }
+        sizeEl.textContent = n ? n : '-';
 
         if (gameState.toastUntil > 0 && performance.now() > gameState.toastUntil) {
           document.getElementById('win-lose-toast').classList.remove('show');
@@ -905,29 +925,34 @@
         }
       }
 
+      var pathCache = null;
+      function buildPaths() {
+        var L = 40, R = CW - 40, T = 40, B = CH - 40;
+        var cx = (L + R) / 2, cy = (T + B) / 2;
+        var segs = [];
+        function r(lo, hi) { return lo + Math.random() * (hi - lo); }
+        segs.push({ m: [L, cy], q: [r(cx - 60, cx - 10), r(T, cy - 20), R, cy] });
+        segs.push({ m: [cx, T], q: [r(cx + 20, R + 30), r(cy, B), cx, B] });
+        segs.push({ m: [L, T], q: [r(L - 30, L + 20), r(T, B), L, B] });
+        segs.push({ m: [R, T], q: [r(R - 20, R + 30), r(T, B), R, B] });
+        segs.push({ m: [L, B], q: [r(cx - 40, cx + 40), r(B, B + 40), R, B] });
+        segs.push({ m: [L, cy], q: [r(L, cx), r(cy - 50, cy + 50), R, cy] });
+        segs.push({ m: [cx, T], q: [r(cx - 40, cx + 40), r(T, B), cx, B] });
+        segs.push({ m: [r(L, cx - 40), cy], q: [r(cx, R), r(cy - 40, cy + 40), r(cx + 40, R), cy] });
+        segs.push({ m: [cx, r(T, cy - 30)], q: [r(cx - 50, cx + 50), cy, cx, r(cy + 30, B)] });
+        return segs;
+      }
       function drawPaths() {
-        var PATH_W = 28;
-        var pad = 48;
-        var left = pad;
-        var right = CW - pad;
-        var top = pad;
-        var bottom = CH - pad;
-        var midX = (left + right) / 2;
-        var midY = (top + bottom) / 2;
+        if (!pathCache) pathCache = buildPaths();
         ctx.strokeStyle = '#f5f0e6';
-        ctx.lineWidth = PATH_W;
+        ctx.lineWidth = 26;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.beginPath();
-        ctx.moveTo(left, midY);
-        ctx.lineTo(right, midY);
-        ctx.moveTo(midX, top);
-        ctx.lineTo(midX, bottom);
-        ctx.moveTo(left, top);
-        ctx.lineTo(right, top);
-        ctx.lineTo(right, bottom);
-        ctx.lineTo(left, bottom);
-        ctx.closePath();
+        pathCache.forEach(function(s) {
+          ctx.moveTo(s.m[0], s.m[1]);
+          if (s.q) ctx.quadraticCurveTo(s.q[0], s.q[1], s.q[2], s.q[3]);
+        });
         ctx.stroke();
       }
 
