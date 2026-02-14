@@ -620,7 +620,13 @@
 
       function spawnBungalows() {
         var gw = GRID_W - 3, gh = GRID_H - 3;
-        var positions = [[2, 2], [gw, 2], [2, gh], [gw, gh]];
+        var midX = Math.floor(GRID_W / 2), midY = Math.floor(GRID_H / 2);
+        var positions = [
+          [2, 2], [gw, 2], [2, gh], [gw, gh],
+          [midX, 2], [midX, gh], [2, midY], [gw, midY],
+          [8, 8], [gw - 6, 8], [8, gh - 6], [gw - 6, gh - 6],
+          [midX, midY]
+        ];
         gameState.bungalows = positions.map(([gx, gy], i) => ({
           id: 'b' + i,
           gx, gy,
@@ -837,7 +843,7 @@
         document.getElementById('score-display').textContent = 'SCORE: 0';
         document.getElementById('day-display').textContent = 'DAY 1';
         document.getElementById('time-display').textContent = '1:30';
-        document.getElementById('occupied-display').textContent = '0/4';
+        document.getElementById('occupied-display').textContent = '0/' + gameState.bungalows.length;
         document.getElementById('how-to-play-screen').classList.remove('visible');
         var prog = document.getElementById('game-progress-wrap');
         if (prog) prog.style.display = 'block';
@@ -934,21 +940,40 @@
         var L = pad, R = WW - pad, T = pad, B = WH - pad;
         var segs = [];
         function r(lo, hi) { return lo + Math.random() * (hi - lo); }
-        var stepH = 90 + Math.random() * 50;
-        var stepV = 90 + Math.random() * 50;
+        var stepH = 100 + Math.random() * 40;
+        var stepV = 100 + Math.random() * 40;
+        var curveStrength = 50;
         for (var y = T; y <= B; y += stepH) {
-          var y1 = Math.min(y + r(-8, 8), B);
-          segs.push({
-            m: [L, y],
-            q: [r((L + R) / 2 - 80, (L + R) / 2 + 80), r(y, y1), R, y1]
-          });
+          var n = 4 + Math.floor(Math.random() * 2);
+          var pts = [];
+          var vy = y;
+          for (var i = 0; i <= n; i++) {
+            var tx = L + (R - L) * i / n + r(-12, 12);
+            if (i > 0 && i < n) vy += r(-curveStrength, curveStrength);
+            pts.push([tx, vy]);
+          }
+          var curves = [];
+          for (var j = 1; j < pts.length; j++) {
+            var p0 = pts[j - 1], p1 = pts[j];
+            curves.push([(p0[0] + p1[0]) / 2 + r(-40, 40), (p0[1] + p1[1]) / 2 + r(-40, 40), p1[0], p1[1]]);
+          }
+          segs.push({ m: [pts[0][0], pts[0][1]], q: curves });
         }
         for (var x = L; x <= R; x += stepV) {
-          var x1 = Math.min(x + r(-8, 8), R);
-          segs.push({
-            m: [x, T],
-            q: [r(x, x1), r((T + B) / 2 - 80, (T + B) / 2 + 80), x1, B]
-          });
+          var n = 4 + Math.floor(Math.random() * 2);
+          var pts = [];
+          var vx = x;
+          for (var i = 0; i <= n; i++) {
+            var ty = T + (B - T) * i / n + r(-12, 12);
+            if (i > 0 && i < n) vx += r(-curveStrength, curveStrength);
+            pts.push([vx, ty]);
+          }
+          var curves = [];
+          for (var j = 1; j < pts.length; j++) {
+            var p0 = pts[j - 1], p1 = pts[j];
+            curves.push([(p0[0] + p1[0]) / 2 + r(-40, 40), (p0[1] + p1[1]) / 2 + r(-40, 40), p1[0], p1[1]]);
+          }
+          segs.push({ m: [pts[0][0], pts[0][1]], q: curves });
         }
         return segs;
       }
@@ -961,7 +986,7 @@
         ctx.beginPath();
         pathCache.forEach(function(s) {
           ctx.moveTo(s.m[0], s.m[1]);
-          if (s.q) ctx.quadraticCurveTo(s.q[0], s.q[1], s.q[2], s.q[3]);
+          if (s.q) s.q.forEach(function(q) { ctx.quadraticCurveTo(q[0], q[1], q[2], q[3]); });
         });
         ctx.stroke();
       }
