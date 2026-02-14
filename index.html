@@ -930,25 +930,32 @@
 
       var pathCache = null;
       function buildPaths() {
-        var L = 40, R = WW - 40, T = 40, B = WH - 40;
-        var cx = (L + R) / 2, cy = (T + B) / 2;
+        var pad = 20;
+        var L = pad, R = WW - pad, T = pad, B = WH - pad;
         var segs = [];
         function r(lo, hi) { return lo + Math.random() * (hi - lo); }
-        segs.push({ m: [L, cy], q: [r(cx - 60, cx - 10), r(T, cy - 20), R, cy] });
-        segs.push({ m: [cx, T], q: [r(cx + 20, R + 30), r(cy, B), cx, B] });
-        segs.push({ m: [L, T], q: [r(L - 30, L + 20), r(T, B), L, B] });
-        segs.push({ m: [R, T], q: [r(R - 20, R + 30), r(T, B), R, B] });
-        segs.push({ m: [L, B], q: [r(cx - 40, cx + 40), r(B, B + 40), R, B] });
-        segs.push({ m: [L, cy], q: [r(L, cx), r(cy - 50, cy + 50), R, cy] });
-        segs.push({ m: [cx, T], q: [r(cx - 40, cx + 40), r(T, B), cx, B] });
-        segs.push({ m: [r(L, cx - 40), cy], q: [r(cx, R), r(cy - 40, cy + 40), r(cx + 40, R), cy] });
-        segs.push({ m: [cx, r(T, cy - 30)], q: [r(cx - 50, cx + 50), cy, cx, r(cy + 30, B)] });
+        var stepH = 90 + Math.random() * 50;
+        var stepV = 90 + Math.random() * 50;
+        for (var y = T; y <= B; y += stepH) {
+          var y1 = Math.min(y + r(-8, 8), B);
+          segs.push({
+            m: [L, y],
+            q: [r((L + R) / 2 - 80, (L + R) / 2 + 80), r(y, y1), R, y1]
+          });
+        }
+        for (var x = L; x <= R; x += stepV) {
+          var x1 = Math.min(x + r(-8, 8), R);
+          segs.push({
+            m: [x, T],
+            q: [r(x, x1), r((T + B) / 2 - 80, (T + B) / 2 + 80), x1, B]
+          });
+        }
         return segs;
       }
       function drawPaths() {
         if (!pathCache) pathCache = buildPaths();
-        ctx.strokeStyle = '#f5f0e6';
-        ctx.lineWidth = 26;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 22;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.beginPath();
