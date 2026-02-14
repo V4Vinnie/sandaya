@@ -599,7 +599,7 @@
         day: 1,
         timeRemaining: DAY_LENGTH_BASE,
         currentDayLength: DAY_LENGTH_BASE,
-        koala: { x: WW / 2 - TILE / 2, y: WH / 2 - TILE / 2, gx: 0, gy: 0, w: TILE, h: TILE, walkFrame: 0 },
+        koala: { x: WW / 2 - TILE / 2, y: WH / 2 - TILE / 2, gx: 0, gy: 0, w: TILE, h: TILE, walkFrame: 0, lastDir: 'down' },
         families: [],
         bungalows: [],
         showDayTransition: false,
@@ -641,13 +641,19 @@
         return gameState.families.length > 0 ? gameState.families[0] : null;
       }
 
-      function manhattan(b, p) {
-        return Math.abs(b.gx - p.gx) + Math.abs(b.gy - p.gy);
+      var ASSIGN_RADIUS = 80;
+
+      function distanceToBungalow(b) {
+        var k = gameState.koala;
+        var bx = b.x + b.w / 2, by = b.y + b.h / 2;
+        var kx = k.x + k.w / 2, ky = k.y + k.h / 2;
+        return Math.sqrt((bx - kx) * (bx - kx) + (by - ky) * (by - ky));
       }
 
       function nearbyBungalow() {
-        const p = gameState.koala;
-        return gameState.bungalows.find(b => !b.occupied && manhattan(b, p) <= 2);
+        return gameState.bungalows.find(function(b) {
+          return !b.occupied && distanceToBungalow(b) <= ASSIGN_RADIUS;
+        });
       }
 
       function assignFamily() {
@@ -828,7 +834,7 @@
           day: 1,
           timeRemaining: dayLen,
           currentDayLength: dayLen,
-          koala: { x: WW / 2 - TILE / 2, y: WH / 2 - TILE / 2, gx: 0, gy: 0, w: TILE, h: TILE, walkFrame: 0 },
+          koala: { x: WW / 2 - TILE / 2, y: WH / 2 - TILE / 2, gx: 0, gy: 0, w: TILE, h: TILE, walkFrame: 0, lastDir: 'down' },
           families: [],
           bungalows: [],
           showDayTransition: false,
@@ -864,18 +870,22 @@
         if (keys['ArrowUp'] || keys['w'] || keys['W']) {
           k.y = Math.max(0, k.y - SPEED);
           k.walkFrame = (k.walkFrame + 1) % 20;
+          k.lastDir = 'up';
         }
         if (keys['ArrowDown'] || keys['s'] || keys['S']) {
           k.y = Math.min(WH - TILE, k.y + SPEED);
           k.walkFrame = (k.walkFrame + 1) % 20;
+          k.lastDir = 'down';
         }
         if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
           k.x = Math.max(0, k.x - SPEED);
           k.walkFrame = (k.walkFrame + 1) % 20;
+          k.lastDir = 'left';
         }
         if (keys['ArrowRight'] || keys['d'] || keys['D']) {
           k.x = Math.min(WW - TILE, k.x + SPEED);
           k.walkFrame = (k.walkFrame + 1) % 20;
+          k.lastDir = 'right';
         }
         k.gx = Math.floor(k.x / TILE);
         k.gy = Math.floor(k.y / TILE);
@@ -1025,9 +1035,23 @@
             ctx.fillStyle = b.occupied ? '#6b8e6a' : '#7a9c8a';
             ctx.fillRect(b.x, b.y, b.w, b.h);
           }
+          var num = String(b.beds);
+          var badgeW = 28;
+          var badgeH = 22;
+          var badgeX = b.x + b.w / 2 - badgeW / 2;
+          var badgeY = b.y + b.h - 8;
+          ctx.fillStyle = '#ffffff';
+          ctx.strokeStyle = '#1a3516';
+          ctx.lineWidth = 2;
+          ctx.fillRect(badgeX, badgeY, badgeW, badgeH);
+          ctx.strokeRect(badgeX, badgeY, badgeW, badgeH);
+          ctx.font = 'bold 14px "Press Start 2P"';
           ctx.fillStyle = '#1a3516';
-          ctx.font = '12px "Press Start 2P"';
-          ctx.fillText(String(b.beds), b.x + b.w / 2 - 6, b.y + b.h / 2 + 4);
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(num, b.x + b.w / 2, badgeY + badgeH / 2);
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'alphabetic';
         });
 
         var k = gameState.koala;
@@ -1037,6 +1061,27 @@
         } else {
           ctx.fillStyle = '#8b9c7a';
           ctx.fillRect(k.x, k.y, k.w, k.h);
+        }
+        var fam = getCurrentFamily();
+        if (fam && images.people && images.people.complete) {
+          var followDist = 20;
+          var size = 18;
+          var dir = k.lastDir || 'down';
+          var dx = 0, dy = 0;
+          if (dir === 'up') dy = followDist;
+          if (dir === 'down') dy = -followDist;
+          if (dir === 'left') dx = followDist;
+          if (dir === 'right') dx = -followDist;
+          var baseX = k.x + k.w / 2 + dx - size / 2;
+          var baseY = k.y + k.h / 2 + dy - size / 2;
+          var stepX = 0, stepY = 0;
+          if (dir === 'up' || dir === 'down') stepY = dir === 'up' ? size + 4 : -(size + 4);
+          else stepX = dir === 'right' ? -(size + 4) : size + 4;
+          for (var i = 0; i < fam.size; i++) {
+            var px = baseX + stepX * i;
+            var py = baseY + stepY * i;
+            ctx.drawImage(images.people, px, py, size, size);
+          }
         }
         ctx.restore();
       }
