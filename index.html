@@ -641,7 +641,10 @@
         return gameState.families.length > 0 ? gameState.families[0] : null;
       }
 
-      var ASSIGN_RADIUS = 80;
+      function getAssignRadius(b) {
+        var houseRadius = Math.max(b.w, b.h) / 2;
+        return houseRadius + 72;
+      }
 
       function distanceToBungalow(b) {
         var k = gameState.koala;
@@ -652,7 +655,7 @@
 
       function nearbyBungalow() {
         return gameState.bungalows.find(function(b) {
-          return !b.occupied && distanceToBungalow(b) <= ASSIGN_RADIUS;
+          return !b.occupied && distanceToBungalow(b) <= getAssignRadius(b);
         });
       }
 
