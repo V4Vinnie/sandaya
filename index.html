@@ -365,6 +365,22 @@
     #how-to-play-screen .htp-commencer { font-size: 10px; padding: 12px 28px; }
     #how-to-play-screen .htp-footer { margin-top: auto; font-size: 8px; color: #3d6b35; }
 
+    /* Language selection */
+    #language-screen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #7cb86a;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 21;
+    }
+    #language-screen.visible { display: flex; }
+    #language-screen .lang-title { font-size: 12px; color: #1a3516; margin-bottom: 20px; text-shadow: 1px 1px 0 rgba(255,255,255,0.5); }
+    #language-screen .lang-buttons { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+
     /* Storyboard: Game Over */
     #gameover-screen .go-title { color: #b91c1c; text-shadow: 2px 2px 0 #1a3516; font-size: 14px; }
     #gameover-screen .go-koala-wrap { margin: 8px 0; }
@@ -430,47 +446,56 @@
 
     <!-- Storyboard: Welcome -->
     <div id="welcome-screen">
-      <div class="welcome-title">BIENVENUE!</div>
+      <div class="welcome-title" data-i18n="welcome_title">BIENVENUE!</div>
       <div class="welcome-koala-wrap">
         <img id="welcome-koala-img" src="assets/koala_wave.png" alt="" />
         <img class="welcome-deco house-l" src="assets/house_empty.png" alt="" />
         <img class="welcome-deco house-r" src="assets/house_empty.png" alt="" />
       </div>
-      <button class="pixel-btn welcome-jouer" id="welcome-play-btn">JOUER</button>
-      <span class="lb-link" id="welcome-scores-link" style="margin-top: 8px; font-size: 8px;">VOIR SCORES</span>
+      <button class="pixel-btn welcome-jouer" id="welcome-play-btn" data-i18n="start_btn">START</button>
+      <span class="lb-link" id="welcome-scores-link" style="margin-top: 8px; font-size: 8px;" data-i18n="view_scores">VOIR SCORES</span>
       <div class="welcome-footer">
         <span>SANDAYA</span>
         <span>Maxxton</span>
       </div>
     </div>
 
+    <!-- Language selection -->
+    <div id="language-screen">
+      <div class="lang-title" data-i18n="choose_language">Choose language</div>
+      <div class="lang-buttons">
+        <button class="pixel-btn" id="lang-en-btn">English</button>
+        <button class="pixel-btn" id="lang-fr-btn">Français</button>
+      </div>
+    </div>
+
     <!-- Storyboard: How to Play -->
     <div id="how-to-play-screen">
-      <div class="htp-title">COMMENT JOUER</div>
+      <div class="htp-title" data-i18n="how_to_play_title">COMMENT JOUER</div>
       <div class="htp-panels">
         <div class="htp-panel">
-          <strong>se d&eacute;placer</strong>
-          <span>WASD / Arrows to move</span>
+          <strong data-i18n="htp_move">se déplacer</strong>
+          <span data-i18n="htp_move_desc">WASD / Arrows to move</span>
           <img src="assets/tap.png" alt="" width="32" height="32" />
         </div>
         <div class="htp-panel">
-          <strong>accueillir les invit&eacute;s</strong>
-          <span>Assign family to bungalow</span>
+          <strong data-i18n="htp_assign">accueillir les invités</strong>
+          <span data-i18n="htp_assign_desc">Assign family to bungalow</span>
           <img src="assets/people.png" alt="" width="32" height="32" />
         </div>
         <div class="htp-panel wide">
-          <strong>guide to their stay</strong>
-          <span>Walk to house, ENTER/SPACE to assign. Match family size to beds!</span>
+          <strong data-i18n="htp_guide">guide to their stay</strong>
+          <span data-i18n="htp_guide_desc">Walk to house, ENTER/SPACE to assign. Match family size to beds!</span>
         </div>
       </div>
       <div class="htp-scoring">
-        <div class="row">correspondance parfaite <span>+10</span></div>
-        <div class="row">correspondance <span>+5</span></div>
-        <div class="row">bonus de rapidit&eacute; <span>+2</span></div>
-        <div class="row">combo <span>X2</span></div>
-        <div class="row">tout complet <span>+50</span></div>
+        <div class="row"><span data-i18n="score_perfect">correspondance parfaite</span> <span>+10</span></div>
+        <div class="row"><span data-i18n="score_match">correspondance</span> <span>+5</span></div>
+        <div class="row"><span data-i18n="score_speed">bonus de rapidité</span> <span>+2</span></div>
+        <div class="row"><span data-i18n="score_combo">combo</span> <span>X2</span></div>
+        <div class="row"><span data-i18n="score_all_full">tout complet</span> <span>+50</span></div>
       </div>
-      <button class="pixel-btn htp-commencer" id="htp-start-btn">COMMENCER</button>
+      <button class="pixel-btn htp-commencer" id="htp-start-btn" data-i18n="htp_start_btn">COMMENCER</button>
       <div class="htp-footer">SANDAYA &bull; Maxxton</div>
     </div>
 
@@ -481,29 +506,29 @@
       </div>
       <div class="lb-list" id="leaderboard-screen-entries"></div>
       <div class="lb-buttons">
-        <button class="pixel-btn" id="lb-rejouer-btn">REJOUER</button>
-        <span class="lb-link" id="lb-comment-jouer">comment jouer</span>
+        <button class="pixel-btn" id="lb-rejouer-btn" data-i18n="play_again">REJOUER</button>
+        <span class="lb-link" id="lb-comment-jouer" data-i18n="how_to_play_link">comment jouer</span>
       </div>
     </div>
 
     <div id="start-screen" class="hide">
-      <button class="pixel-btn" id="start-btn">START GAME</button>
+      <button class="pixel-btn" id="start-btn" data-i18n="start_game_btn">START GAME</button>
     </div>
     <div id="gameover-screen">
-      <h2 class="go-title">FIN DE PARTIE</h2>
+      <h2 class="go-title" data-i18n="game_over_title">FIN DE PARTIE</h2>
       <div class="go-koala-wrap">
         <img id="gameover-koala-img" src="assets/koala_wave.png" alt="" />
       </div>
       <p id="final-score">0</p>
       <div id="name-input-wrap">
-        <input type="text" id="player-name" placeholder="nom" maxlength="12" />
+        <input type="text" id="player-name" data-i18n-placeholder="name_placeholder" placeholder="nom" maxlength="12" />
       </div>
-      <button class="pixel-btn" id="submit-score-btn">VALIDER</button>
+      <button class="pixel-btn" id="submit-score-btn" data-i18n="submit_btn">VALIDER</button>
       <div id="leaderboard">
-        <h3>MEILLEURS SCORES</h3>
+        <h3 data-i18n="best_scores">MEILLEURS SCORES</h3>
         <div id="leaderboard-entries"></div>
       </div>
-      <button class="pixel-btn" id="play-again-btn" style="margin-top: 16px;">REJOUER</button>
+      <button class="pixel-btn" id="play-again-btn" style="margin-top: 16px;" data-i18n="play_again">REJOUER</button>
       <div class="go-footer">
         <span>SANDAYA</span>
         <span>Maxxton</span>
@@ -516,21 +541,21 @@
       <span id="occupied-display">0/4</span>
     </div>
     <div id="family-queue">
-      <span class="queue-label">NEXT FAMILY:</span>
+      <span class="queue-label" data-i18n="next_family">NEXT FAMILY:</span>
       <div id="current-family">
         <div id="current-family-people"></div>
         <span id="current-family-size">-</span>
       </div>
     </div>
     <div id="day-transition-screen">
-      <h2>DAY <span id="tt-day">1</span> ENDED</h2>
-      <p class="tt-summary">Time's up! Here's your summary:</p>
-      <div class="tt-row tt-occupied"><span>Occupied Bungalows</span><span id="tt-occupied">0</span></div>
-      <div class="tt-row tt-empty"><span>Empty Bungalows</span><span id="tt-empty">4</span></div>
-      <div class="tt-row tt-penalty" id="tt-penalty-wrap"><span>Penalty</span><span id="tt-penalty">-0</span></div>
-      <p class="tt-next">Day <span id="tt-next-day">2</span> will be faster!</p>
-      <button class="pixel-btn" id="continue-day-btn">CONTINUE TO DAY <span id="tt-continue-day">2</span></button>
-      <button class="pixel-btn" id="quit-save-btn" style="margin-top: 8px; font-size: 8px;">QUIT &amp; SAVE SCORE</button>
+      <h2><span data-i18n="day">DAY</span> <span id="tt-day">1</span> <span data-i18n="day_ended">ENDED</span></h2>
+      <p class="tt-summary" data-i18n="times_up_summary">Time's up! Here's your summary:</p>
+      <div class="tt-row tt-occupied"><span data-i18n="occupied_bungalows">Occupied Bungalows</span><span id="tt-occupied">0</span></div>
+      <div class="tt-row tt-empty"><span data-i18n="empty_bungalows">Empty Bungalows</span><span id="tt-empty">4</span></div>
+      <div class="tt-row tt-penalty" id="tt-penalty-wrap"><span data-i18n="penalty">Penalty</span><span id="tt-penalty">-0</span></div>
+      <p class="tt-next"><span data-i18n="day">Day</span> <span id="tt-next-day">2</span> <span data-i18n="will_be_faster">will be faster!</span></p>
+      <button class="pixel-btn" id="continue-day-btn"><span data-i18n="continue_to_day">CONTINUE TO DAY</span> <span id="tt-continue-day">2</span></button>
+      <button class="pixel-btn" id="quit-save-btn" style="margin-top: 8px; font-size: 8px;" data-i18n="quit_save">QUIT &amp; SAVE SCORE</button>
     </div>
     <div id="game-progress-wrap" style="display: none;">
       <div id="game-progress-fill" style="width: 100%;"></div>
@@ -538,7 +563,7 @@
     <div id="game-multiplier">x2</div>
     <div id="win-lose-toast"></div>
   </div>
-  <p id="instructions">
+  <p id="instructions" data-i18n="instructions_text">
     Walk to a bungalow (within 2 steps). ENTER or SPACE to assign. Perfect match = +10. Oversized house = fewer points. Too small = not allowed!
   </p>
 
@@ -551,6 +576,125 @@
       const TILE = 32;
       const WW = 1024;
       const WH = 768;
+
+      const LANG_KEY = 'koalaFamilyLang';
+      const TRANSLATIONS = {
+        en: {
+          choose_language: 'Choose language',
+          welcome_title: 'WELCOME!',
+          start_btn: 'START',
+          view_scores: 'VIEW SCORES',
+          how_to_play_title: 'HOW TO PLAY',
+          how_to_play_link: 'how to play',
+          htp_move: 'move',
+          htp_move_desc: 'WASD / Arrows to move',
+          htp_assign: 'welcome guests',
+          htp_assign_desc: 'Assign family to bungalow',
+          htp_guide: 'guide to their stay',
+          htp_guide_desc: 'Walk to house, ENTER/SPACE to assign. Match family size to beds!',
+          score_perfect: 'perfect match',
+          score_match: 'match',
+          score_speed: 'speed bonus',
+          score_combo: 'combo',
+          score_all_full: 'all full',
+          htp_start_btn: 'START',
+          start_game_btn: 'START GAME',
+          play_again: 'PLAY AGAIN',
+          game_over_title: 'GAME OVER',
+          name_placeholder: 'name',
+          submit_btn: 'SUBMIT',
+          best_scores: 'BEST SCORES',
+          next_family: 'NEXT FAMILY:',
+          day: 'DAY',
+          day_ended: 'ENDED',
+          times_up_summary: "Time's up! Here's your summary:",
+          occupied_bungalows: 'Occupied Bungalows',
+          empty_bungalows: 'Empty Bungalows',
+          penalty: 'Penalty',
+          will_be_faster: 'will be faster!',
+          continue_to_day: 'CONTINUE TO DAY',
+          quit_save: 'QUIT & SAVE SCORE',
+          instructions_text: 'Walk to a bungalow (within 2 steps). ENTER or SPACE to assign. Perfect match = +10. Oversized house = fewer points. Too small = not allowed!',
+          toast_walk_closer: 'Walk closer to a bungalow!',
+          toast_too_small: 'TOO SMALL!',
+          toast_all_full: 'All bungalows full!',
+          toast_perfect: 'Perfect!',
+          no_scores_yet: 'No scores yet!',
+          score_label: 'SCORE',
+          occupied_label: 'occupied'
+        },
+        fr: {
+          choose_language: 'Choisir la langue',
+          welcome_title: 'BIENVENUE!',
+          start_btn: 'DÉMARRER',
+          view_scores: 'VOIR LES SCORES',
+          how_to_play_title: 'COMMENT JOUER',
+          how_to_play_link: 'comment jouer',
+          htp_move: 'se déplacer',
+          htp_move_desc: 'ZQSD / Flèches pour bouger',
+          htp_assign: 'accueillir les invités',
+          htp_assign_desc: 'Attribuer la famille au bungalow',
+          htp_guide: 'guide vers leur séjour',
+          htp_guide_desc: 'Marchez jusqu\'à la maison, ENTRÉE/ESPACE pour attribuer. Taille famille = nombre de lits!',
+          score_perfect: 'correspondance parfaite',
+          score_match: 'correspondance',
+          score_speed: 'bonus de rapidité',
+          score_combo: 'combo',
+          score_all_full: 'tout complet',
+          htp_start_btn: 'COMMENCER',
+          start_game_btn: 'JOUER',
+          play_again: 'REJOUER',
+          game_over_title: 'FIN DE PARTIE',
+          name_placeholder: 'nom',
+          submit_btn: 'VALIDER',
+          best_scores: 'MEILLEURS SCORES',
+          next_family: 'PROCHAINE FAMILLE:',
+          day: 'JOUR',
+          day_ended: 'TERMINÉ',
+          times_up_summary: 'Temps écoulé! Résumé:',
+          occupied_bungalows: 'Bungalows occupés',
+          empty_bungalows: 'Bungalows vides',
+          penalty: 'Pénalité',
+          will_be_faster: 'sera plus rapide!',
+          continue_to_day: 'CONTINUER JOUR',
+          quit_save: 'QUITTER ET SAUVEGARDER',
+          instructions_text: 'Marchez jusqu\'à un bungalow (à 2 pas). ENTRÉE ou ESPACE pour attribuer. Correspondance parfaite = +10. Maison trop grande = moins de points. Trop petit = interdit!',
+          toast_walk_closer: 'Approchez-vous d\'un bungalow!',
+          toast_too_small: 'TROP PETIT!',
+          toast_all_full: 'Tous les bungalows pleins!',
+          toast_perfect: 'Parfait!',
+          no_scores_yet: 'Aucun score pour l\'instant!',
+          score_label: 'SCORE',
+          occupied_label: 'occupés'
+        }
+      };
+      function getLang() {
+        var saved = (typeof localStorage !== 'undefined' && localStorage.getItem(LANG_KEY)) || '';
+        return (saved === 'fr' || saved === 'en') ? saved : null;
+      }
+      function setLang(lang) {
+        if (lang !== 'en' && lang !== 'fr') return;
+        if (typeof localStorage !== 'undefined') localStorage.setItem(LANG_KEY, lang);
+        currentLang = lang;
+        applyTranslations();
+      }
+      var currentLang = getLang();
+        if (!currentLang) currentLang = 'en';
+      function t(key) {
+        var L = TRANSLATIONS[currentLang];
+        return (L && L[key]) || TRANSLATIONS.en[key] || key;
+      }
+      function applyTranslations() {
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          var key = el.getAttribute('data-i18n');
+          if (key) el.textContent = t(key);
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+          var key = el.getAttribute('data-i18n-placeholder');
+          if (key) el.placeholder = t(key);
+        });
+      }
+      applyTranslations();
 
       const ASSETS = {
         koalaStill: 'assets/koala_still.png',
@@ -663,11 +807,11 @@
         const fam = getCurrentFamily();
         const b = nearbyBungalow();
         if (!fam || !b) {
-          if (!b && fam) showToast('Walk closer to a bungalow!', 'info');
+          if (!b && fam) showToast(t('toast_walk_closer'), 'info');
           return;
         }
         if (b.beds < fam.size) {
-          showToast('TOO SMALL!', 'bad');
+          showToast(t('toast_too_small'), 'bad');
           return;
         }
         const perfect = b.beds === fam.size;
@@ -685,9 +829,9 @@
         const occupied = gameState.bungalows.filter(x => x.occupied).length;
         if (occupied === gameState.bungalows.length) {
           gameState.gameWon = true;
-          showToast('All bungalows full!', 'good');
+          showToast(t('toast_all_full'), 'good');
         } else {
-          showToast((perfect ? '+10 Perfect!' : '+' + (points / mult)) + (mult > 1 ? ' x2!' : ''), 'good');
+          showToast((perfect ? '+10 ' + t('toast_perfect') + '!' : '+' + (points / mult)) + (mult > 1 ? ' x2!' : ''), 'good');
         }
       }
 
@@ -764,7 +908,7 @@
         const entries = getLeaderboard();
         const html = entries.map((e, i) =>
           `<div class="leaderboard-entry ${i < 3 ? 'top' : ''}">${i + 1}. ${e.name} - ${e.score}</div>`
-        ).join('') || '<div class="leaderboard-entry">No scores yet!</div>';
+        ).join('') || '<div class="leaderboard-entry">' + t('no_scores_yet') + '</div>';
         document.getElementById('leaderboard-entries').innerHTML = html;
       }
 
@@ -800,7 +944,7 @@
         document.getElementById('final-score').textContent = '0';
         document.getElementById('name-input-wrap').style.display = 'block';
         document.getElementById('submit-score-btn').style.display = 'block';
-        document.getElementById('play-again-btn').textContent = 'REJOUER';
+        document.getElementById('play-again-btn').textContent = t('play_again');
         document.getElementById('play-again-btn').dataset.mode = '';
       }
       function renderLeaderboardScreen(currentName) {
@@ -808,11 +952,27 @@
         var html = entries.map(function(e, i) {
           var cls = 'lb-entry' + (i < 3 ? ' top3' : '') + (currentName && e.name === currentName ? ' current' : '');
           return '<div class="' + cls + '">' + (i + 1) + '. ' + e.name + ' <span>' + e.score + '</span></div>';
-        }).join('') || '<div class="lb-entry">No scores yet!</div>';
+        }).join('') || '<div class="lb-entry">' + t('no_scores_yet') + '</div>';
         document.getElementById('leaderboard-screen-entries').innerHTML = html;
       }
       document.getElementById('welcome-play-btn').addEventListener('click', function() {
         document.getElementById('welcome-screen').classList.add('hide');
+        if (getLang() === null) {
+          document.getElementById('language-screen').classList.add('visible');
+        } else {
+          currentLang = getLang();
+          applyTranslations();
+          document.getElementById('how-to-play-screen').classList.add('visible');
+        }
+      });
+      document.getElementById('lang-en-btn').addEventListener('click', function() {
+        setLang('en');
+        document.getElementById('language-screen').classList.remove('visible');
+        document.getElementById('how-to-play-screen').classList.add('visible');
+      });
+      document.getElementById('lang-fr-btn').addEventListener('click', function() {
+        setLang('fr');
+        document.getElementById('language-screen').classList.remove('visible');
         document.getElementById('how-to-play-screen').classList.add('visible');
       });
       document.getElementById('htp-start-btn').addEventListener('click', function() {
@@ -830,6 +990,13 @@
       });
 
       function startGame() {
+        // Clear key state so no key is stuck from game over / overlay focus
+        ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'W', 'a', 'A', 's', 'S', 'd', 'D', ' ', 'Enter'].forEach(function(key) {
+          keys[key] = false;
+          keyUsed[key] = false;
+        });
+        // Blur so document receives key events (buttons/inputs won't trap Arrow keys)
+        if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
         var dayLen = DAY_LENGTH_BASE;
         gameState = {
           running: true,
@@ -849,8 +1016,8 @@
         };
         spawnBungalows();
         seedFamilies(6);
-        document.getElementById('score-display').textContent = 'SCORE: 0';
-        document.getElementById('day-display').textContent = 'DAY 1';
+        document.getElementById('score-display').textContent = t('score_label') + ': 0';
+        document.getElementById('day-display').textContent = t('day') + ' 1';
         document.getElementById('time-display').textContent = '1:30';
         document.getElementById('occupied-display').textContent = '0/' + gameState.bungalows.length;
         document.getElementById('how-to-play-screen').classList.remove('visible');
@@ -908,8 +1075,8 @@
         const mins = Math.floor(t / 60);
         const secs = Math.floor(t % 60);
 
-        document.getElementById('score-display').textContent = 'SCORE: ' + gameState.score;
-        document.getElementById('day-display').textContent = 'DAY ' + gameState.day;
+        document.getElementById('score-display').textContent = t('score_label') + ': ' + gameState.score;
+        document.getElementById('day-display').textContent = t('day') + ' ' + gameState.day;
         document.getElementById('time-display').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
         document.getElementById('occupied-display').textContent = occupied + '/' + total;
         const cf = getCurrentFamily();
