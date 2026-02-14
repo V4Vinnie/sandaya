@@ -1,16 +1,16 @@
 # Deploy to GitHub + Vercel
 
-## Deploy from GitHub to Vercel (recommended)
+## Auto-deploy to vercel.app on every push to GitHub
 
-**Easiest: connect the repo in Vercel — then every push to `main` deploys automatically.**
+**One-time setup (about 1 minute):** connect this repo to Vercel. After that, every push to `main` will automatically deploy to vercel.app.
 
-1. Go to **https://vercel.com** and sign in (e.g. **Continue with GitHub**).
+1. Go to **[vercel.com](https://vercel.com)** and sign in with **Continue with GitHub**.
 2. Click **Add New…** → **Project**.
-3. **Import** the repo **V4Vinnie/sandaya** (or your fork).
-4. Leave **Build Command** empty; **Output Directory** can stay default (root).
+3. Under **Import Git Repository**, find **V4Vinnie/sandaya** (or your fork) and click **Import**.
+4. Leave **Build Command** and **Output Directory** as default (no build needed for this static site).
 5. Click **Deploy**.
 
-Your game will be live at a URL like `https://sandaya.vercel.app`. Every push to `main` on GitHub will trigger a new deployment. No GitHub Actions or secrets needed.
+Done. Your app will be at `https://sandaya.vercel.app` (or your project name). **Every push to the `main` branch will trigger a new deployment automatically.** No GitHub Actions or secrets required when using this method.
 
 ---
 
